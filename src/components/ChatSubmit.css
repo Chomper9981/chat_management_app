@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 50%;
+  border-radius: 25%;
   background: transparent;
   color: #0084ff;
   font-size: 20px;
@@ -111,7 +111,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 50%;
+  border-radius: 25%;
   background: transparent;
   color: #0084ff;
   font-size: 20px;
