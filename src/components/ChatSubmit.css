@@ -1,0 +1,240 @@
+/**
+ * ChatSubmit CSS - Facebook Messenger Style
+ * Following 8px grid system
+ */
+
+.chat-submit {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px; /* 1 * 8 = 8 */
+  padding: 12px 16px; /* 1.5*8 and 2*8 */
+  background: #ffffff;
+  border-top: 1px solid #e4e6eb;
+  min-height: 64px; /* 8 * 8 = 64 */
+}
+
+/* Action buttons container */
+.chat-submit-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* 0.5 * 8 = 4 */
+}
+
+/* Icon buttons */
+.chat-submit-icon-btn {
+  width: 36px; /* 4.5 * 8 = 36 */
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #0084ff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chat-submit-icon-btn:hover {
+  background-color: #f2f3f5;
+  transform: scale(1.05);
+}
+
+.chat-submit-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.chat-submit-icon-btn:disabled {
+  color: #bcc0c4;
+  cursor: not-allowed;
+}
+
+.chat-submit-icon-btn:disabled:hover {
+  background: transparent;
+  transform: none;
+}
+
+/* Input wrapper */
+.chat-submit-input-wrapper {
+  flex: 1;
+  position: relative;
+  background: #f0f2f5;
+  border-radius: 20px; /* 2.5 * 8 = 20 */
+  padding: 0 16px; /* 2 * 8 = 16 */
+  min-height: 36px; /* 4.5 * 8 = 36 */
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.chat-submit-input-wrapper:focus-within {
+  background-color: #e4e6eb;
+}
+
+/* TextArea input */
+.chat-submit-input {
+  width: 100%;
+  font-size: 15px;
+  color: #050505;
+  background: transparent;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 8px 0; /* 1 * 8 = 8 */
+  line-height: 20px; /* 2.5 * 8 = 20 */
+}
+
+.chat-submit-input::placeholder {
+  color: #65676b;
+}
+
+/* Ant Design TextArea overrides */
+.chat-submit-input.ant-input {
+  background: transparent;
+  padding: 8px 0;
+}
+
+.chat-submit-input.ant-input:focus,
+.chat-submit-input.ant-input:hover {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Send button - special styling */
+.chat-submit-send-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #0084ff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Send button when message is typed */
+.chat-submit-send-btn.active {
+  background: #0084ff;
+  color: #ffffff;
+}
+
+.chat-submit-send-btn.active:hover {
+  background: #0073e6;
+  transform: scale(1.1);
+}
+
+.chat-submit-send-btn.active:active {
+  transform: scale(0.95);
+}
+
+/* Send button when disabled (no message) */
+.chat-submit-send-btn:disabled {
+  color: #bcc0c4;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.chat-submit-send-btn:disabled:hover {
+  transform: none;
+  background: transparent;
+}
+
+/* Like button alternative when no text */
+.chat-submit-send-btn:not(.active)::before {
+  content: '👍';
+  font-size: 24px;
+  display: none; /* Can enable for Facebook-style like button */
+}
+
+/* Hover effect for icon buttons */
+.chat-submit-icon-btn:hover .anticon,
+.chat-submit-send-btn:not(.active):hover .anticon {
+  animation: iconBounce 0.3s ease;
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Focus visible for accessibility */
+.chat-submit-icon-btn:focus-visible,
+.chat-submit-send-btn:focus-visible {
+  outline: 2px solid #0084ff;
+  outline-offset: 2px;
+}
+
+/* Scrollbar for textarea when multiple lines */
+.chat-submit-input::-webkit-scrollbar {
+  width: 8px; /* 1 * 8 = 8 */
+}
+
+.chat-submit-input::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-submit-input::-webkit-scrollbar-thumb {
+  background: #ccd0d5;
+  border-radius: 4px; /* 0.5 * 8 = 4 */
+}
+
+.chat-submit-input::-webkit-scrollbar-thumb:hover {
+  background: #b8bbbf;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chat-submit {
+    padding: 8px 12px; /* 1*8 and 1.5*8 */
+    gap: 4px; /* 0.5 * 8 = 4 */
+  }
+
+  .chat-submit-icon-btn,
+  .chat-submit-send-btn {
+    width: 32px; /* 4 * 8 = 32 */
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .chat-submit-input {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Hide some action buttons on very small screens */
+  .chat-submit-actions .chat-submit-icon-btn:first-child {
+    display: none; /* Hide paper clip on mobile */
+  }
+}
+
+/* Loading state (optional) */
+.chat-submit.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.chat-submit.loading .chat-submit-send-btn {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

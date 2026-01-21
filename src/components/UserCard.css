@@ -1,0 +1,163 @@
+/**
+ * UserCard CSS - Following 8px grid system
+ * Features:
+ * - Online badge (green dot)
+ * - Bold name for unread messages
+ * - Hover effects
+ */
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 1.5 * 8 = 12 */
+  padding: 8px; /* 1 * 8 = 8 */
+  border-radius: 8px; /* 1 * 8 = 8 */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-card:hover {
+  background-color: #f2f3f5;
+}
+
+.user-card.active {
+  background-color: #e7f3ff;
+}
+
+/* Badge wrapper for online status */
+.user-card-badge {
+  position: relative;
+}
+
+/* Override Ant Design Badge dot for online status */
+.user-card-badge .ant-badge-status-dot {
+  width: 12px; /* 1.5 * 8 = 12 */
+  height: 12px;
+  border: 2px solid #fff;
+}
+
+.user-card-badge .ant-badge-status-success {
+  background-color: #31a24c; /* Green for online */
+}
+
+.user-card-badge .ant-badge-status-default {
+  background-color: #d0d5dd; /* Gray for offline */
+}
+
+/* Avatar */
+.user-card-avatar {
+  flex-shrink: 0;
+}
+
+/* Content area */
+.user-card-content {
+  flex: 1;
+  min-width: 0; /* Important for text overflow */
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* 0.5 * 8 = 4 */
+}
+
+/* Header with name and timestamp */
+.user-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px; /* 1 * 8 = 8 */
+}
+
+/* User name */
+.user-card-name {
+  font-size: 15px;
+  font-weight: 400;
+  color: #050505;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Bold name when unread */
+.user-card-name.unread {
+  font-weight: 600;
+  color: #000000;
+}
+
+/* Timestamp */
+.user-card-timestamp {
+  font-size: 13px;
+  color: #65676b;
+  flex-shrink: 0;
+}
+
+/* Preview area with last message */
+.user-card-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px; /* 1 * 8 = 8 */
+}
+
+/* Last message */
+.last-message {
+  font-size: 13px;
+  color: #65676b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Bold last message when unread */
+.last-message.unread {
+  font-weight: 600;
+  color: #050505;
+}
+
+/* Unread count badge */
+.unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px; /* 2.5 * 8 = 20 */
+  height: 20px;
+  padding: 0 6px;
+  background-color: #0084ff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px; /* Circular */
+  flex-shrink: 0;
+}
+
+/* Hover effect for unread badge */
+.user-card:hover .unread-badge {
+  background-color: #0073e6;
+}
+
+/* Selected/Active state */
+.user-card.active .user-card-name,
+.user-card.active .last-message {
+  color: #0084ff;
+}
+
+.user-card.active .unread-badge {
+  background-color: #ffffff;
+  color: #0084ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .user-card {
+    padding: 12px; /* 1.5 * 8 = 12 */
+  }
+  
+  .user-card-avatar {
+    width: 40px; /* 5 * 8 = 40 */
+    height: 40px;
+  }
+  
+  .user-card-timestamp {
+    display: none; /* Hide timestamp on mobile */
+  }
+}

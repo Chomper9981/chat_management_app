@@ -1,0 +1,18 @@
+.conversations-page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.conversations-page-header {
+  /* flex-shrink: 0; */
+  width: 100vw;
+}
+
+.conversations-page-content {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  width: 100vw;
+}
