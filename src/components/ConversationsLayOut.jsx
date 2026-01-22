@@ -1,31 +1,53 @@
-import { Layout, Menu } from "antd";
+import { useState } from "react";
+import { Layout, Button, Avatar } from "antd";
+import { MenuOutlined, UserOutlined } from "@ant-design/icons";
 import SearchBar from "./SearchBar.jsx";
-import "./ConversationsLayOut.css";
-import { Avatar } from "antd";
-import { UserOutlined } from '@ant-design/icons';
-import UserCard from "./UserCard.jsx";
+import UserCardContainer from "./UserCardContainer.jsx";
+import ConversationArea from "./ConversationArea.jsx";
 import ChatSubmit from "./ChatSubmit.jsx";
+import "./ConversationsLayOut.css";
+import { Users } from "../mocks/mockUser";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 function ConversationsLayOut() {
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleUserSelect = (user) => {
+    setSelectedUser(user);
+  };
+
   return (
     <Layout className="conversations-layout">
-      <Sider width={300} collapsedWidth={50} breakpoint="xs" className="conversations-sider">
+      <Sider width={300} className="conversations-sider">
         <SearchBar />
-        <UserCard />
+        <UserCardContainer
+          Users={Users}
+          onUserSelect={handleUserSelect}
+          selectedUserId={selectedUser?.id}
+        />
       </Sider>
-      <Layout className="conversations-main">
-        <Header className="conversations-header">
-          <Avatar className="chatting-avatar" icon={<UserOutlined />} />
-          <span className="chatting-name">Đối tượng đang chat</span>
-        </Header>
-        <Content className="conversations-content">Nội dung chính</Content>
-        
-        <Footer className="conversations-footer">
-          <ChatSubmit />
-        </Footer>
-      </Layout>
+      {selectedUser != null && (
+        <Layout className="conversations-main">
+          <Header className="conversations-header">
+            <Avatar
+              className="chatting-avatar"
+              icon={<UserOutlined />}
+              src={selectedUser?.avatar}
+            />
+            <span className="chatting-name">
+              {selectedUser?.name || "Chọn cuộc trò chuyện"}
+            </span>
+          </Header>
+          <Content className="conversations-content">
+            <ConversationArea />
+          </Content>
+
+          <Footer className="conversations-footer">
+            <ChatSubmit />
+          </Footer>
+        </Layout>
+      )}
     </Layout>
   );
 }

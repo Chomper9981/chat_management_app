@@ -1,29 +1,34 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input } from "antd";
 
 const { Search } = Input;
 
-export default function SearchBar({
-  onSearch,
-}) {
-  const [keyword, setKeyword] = useState("");
+const SearchBar = ({ onSearch, placeholder = "Tìm kiếm..." }) => {
+  const [searchValue, setSearchValue] = useState("");
 
-  const handleSearch = () => {
-    onSearch?.({
-      keyword,
-    });
+  const handleSearch = (value) => {
+    console.log("Search:", value);
+    onSearch?.(value);
+  };
+
+  const handleChange = (e) => {
+    setSearchValue(e.target.value);
+    // Optional: real-time search
+    onSearch?.(e.target.value);
   };
 
   return (
-    <div style={{ width: '100%', padding: '16px' }}>
+    <div style={{ padding: "8px" }}>
       <Search
-        placeholder="Nhập từ khóa..."
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
+        placeholder={placeholder}
+        value={searchValue}
+        onChange={handleChange}
         onSearch={handleSearch}
         allowClear
-        style={{ width: '100%' }}
+        enterButton={false}
       />
     </div>
   );
-}
+};
+
+export default SearchBar;

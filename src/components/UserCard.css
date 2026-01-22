@@ -9,9 +9,9 @@
 .user-card {
   display: flex;
   align-items: center;
-  gap: 12px; /* 1.5 * 8 = 12 */
-  padding: 8px; /* 1 * 8 = 8 */
-  border-radius: 8px; /* 1 * 8 = 8 */
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -31,7 +31,7 @@
 
 /* Override Ant Design Badge dot for online status */
 .user-card-badge .ant-badge-status-dot {
-  width: 12px; /* 1.5 * 8 = 12 */
+  width: 12px; 
   height: 12px;
   border: 2px solid #fff;
 }
@@ -55,7 +55,7 @@
   min-width: 0; /* Important for text overflow */
   display: flex;
   flex-direction: column;
-  gap: 4px; /* 0.5 * 8 = 4 */
+  gap: 4px;
 }
 
 /* Header with name and timestamp */
@@ -63,7 +63,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px; /* 1 * 8 = 8 */
+  gap: 8px;
 }
 
 /* User name */
@@ -95,7 +95,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px; /* 1 * 8 = 8 */
+  gap: 8px;
 }
 
 /* Last message */
@@ -119,14 +119,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px; /* 2.5 * 8 = 20 */
+  min-width: 20px;
   height: 20px;
   padding: 0 6px;
   background-color: #0084ff;
   color: #ffffff;
   font-size: 12px;
   font-weight: 600;
-  border-radius: 10px; /* Circular */
+  border-radius: 10px;
   flex-shrink: 0;
 }
 
@@ -146,18 +146,43 @@
   color: #0084ff;
 }
 
+/* User Card Container */
+.user-card-container {
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  padding: 8px;
+}
+
+/* Scrollbar styling */
+.user-card-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.user-card-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.user-card-container::-webkit-scrollbar-thumb {
+  background: #d0d5dd;
+  border-radius: 3px;
+}
+
+.user-card-container::-webkit-scrollbar-thumb:hover {
+  background: #b0b5bd;
+}
+
 /* Responsive adjustments */
 @media (max-width: 576px) {
   .user-card {
-    padding: 12px; /* 1.5 * 8 = 12 */
+    padding: 12px;
   }
   
   .user-card-avatar {
-    width: 40px; /* 5 * 8 = 40 */
+    width: 40px;
     height: 40px;
   }
   
   .user-card-timestamp {
-    display: none; /* Hide timestamp on mobile */
+    display: none;
   }
 }

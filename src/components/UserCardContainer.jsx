@@ -1,11 +1,29 @@
-import React from 'react'
+import React from "react";
+import UserCard from "./UserCard.jsx";
+import "./UserCard.css";
 
-const UserCardContainer = () => {
+const UserCardContainer = ({Users, onUserSelect, selectedUserId}) => {
+
+
   return (
-    <div>
-      
+    <div className="user-card-container">
+      {Users.map((user) => (
+        <UserCard
+          key={user.id}
+          id={user.id}
+          name={user.name}
+          avatar={user.avatar}
+          isOnline={user.isOnline}
+          hasUnread={user.hasUnread}
+          lastMessage={user.lastMessage}
+          timestamp={user.timestamp}
+          unreadCount={user.unreadCount}
+          onClick={() => onUserSelect(user)}
+          isActive={selectedUserId === user.id}
+        />
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default UserCardContainer
+export default UserCardContainer;

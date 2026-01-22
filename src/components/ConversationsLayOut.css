@@ -9,12 +9,14 @@
   background: #ffffff;
   border: none;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1000;
 }
 
 .conversations-main {
   display: flex;
   border-radius: 20px;
-  margin: 20px;
+  margin: 5px;
   background: #65676b;
 }
 
@@ -32,6 +34,20 @@
   border-radius: 20px 20px 0 0;
 }
 
+.menu-toggle-btn {
+  color: #ffffff !important;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
 .conversations-content {
   background: #bbf5ff;
   padding: 24px;
@@ -44,14 +60,24 @@
 }
 
 .conversations-footer {
-  text-align: center;
-  padding: 16px 50px;
-  background: #f0f2f5;
-  color: rgba(0, 0, 0, 0.65);
-  font-size: 14px;
+  padding: 0;
+  background: #ffffff;
   border-radius: 0 0 20px 20px;
+  overflow: hidden;
 }
 
 .chatting-avatar {
   background-color: #65676b;
+}
+
+/* Overlay khi Sider mở trên mobile */
+.sider-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
+  cursor: pointer;
 }
