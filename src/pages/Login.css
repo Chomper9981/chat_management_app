@@ -1,0 +1,67 @@
+/* Login Page Container */
+.login-page {
+  min-height: 100vh;
+  width: 100vw;
+  background: #f0f2f5;
+}
+
+/* Login Form Container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 20px;
+}
+
+/* Login Form */
+.login-form {
+  width: 400px;
+  max-width: 100%;
+  padding: 40px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Login Title */
+.login-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Demo Accounts Info */
+.login-demo-accounts {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #888;
+}
+
+.login-demo-accounts p {
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.login-demo-accounts ul {
+  margin-left: 20px;
+  margin-bottom: 0;
+}
+
+.login-demo-accounts li {
+  margin-bottom: 4px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .login-form {
+    width: 100%;
+    padding: 30px 20px;
+  }
+
+  .login-title {
+    font-size: 20px;
+  }
+}

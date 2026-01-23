@@ -1,5 +1,5 @@
 import { Layout, Avatar } from "antd";
-import { UserOutlined, MessageOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar.jsx";
 import UserCardContainer from "./UserCardContainer.jsx";
@@ -32,8 +32,8 @@ function ConversationsLayOut() {
       </Sider>
       {!selectedUserId && (
         <div className="empty">
-          <MessageOutlined />
-          Chưa có cuộc trò chuyện nào, hãy bắt đầu ngay.
+          
+          <h1>Chưa có cuộc trò chuyện nào, hãy bắt đầu ngay.</h1>
         </div>
       )}
       {selectedUserId && selectedUser && (

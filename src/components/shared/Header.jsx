@@ -46,9 +46,11 @@ const Header = () => {
       {!isLoginPage && (
         <>
           {!isAuthenticated && (
+            <div className="btn">
             <Button type="primary" onClick={() => navigate("/login")}>
               Đăng nhập
             </Button>
+            </div>
           )}
 
           {isAuthenticated && myInfo && (

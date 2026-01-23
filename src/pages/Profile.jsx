@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../action/actions';
 import Header from '../components/shared/Header.jsx';
+import './Profile.css';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -27,15 +28,9 @@ const Profile = () => {
   // Nếu chưa đăng nhập, hiển thị thông báo
   if (!isAuthenticated || !myInfo) {
     return (
-      <div>
+      <div className="profile-page">
         <Header />
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: 'calc(100vh - 64px)',
-          padding: '20px'
-        }}>
+        <div className="profile-not-authenticated">
           <Card>
             <p>Bạn chưa đăng nhập. Vui lòng đăng nhập để xem thông tin.</p>
             <Button type="primary" onClick={() => navigate('/login')}>
@@ -48,23 +43,13 @@ const Profile = () => {
   }
 
   return (
-    <div>
+    <div className="profile-page">
       <Header />
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: 'calc(100vh - 64px)',
-        padding: '20px',
-        background: '#f0f2f5'
-      }}>
+      <div className="profile-container">
         <Card
-          style={{ 
-            width: 600,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}
+          className="profile-card"
           title={
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="profile-card-title">
               <Avatar size={48} icon={<UserOutlined />} />
               <span>Thông tin cá nhân</span>
             </div>
@@ -87,11 +72,15 @@ const Profile = () => {
             </Space>
           }
         >
-          <Descriptions bordered column={1} labelStyle={{ fontWeight: 'bold', width: '150px' }}>
+          <Descriptions 
+            bordered 
+            column={1} 
+            labelStyle={{ fontWeight: 'bold', width: '150px' }}
+          >
             <Descriptions.Item 
               label={
                 <span>
-                  <IdcardOutlined style={{ marginRight: '8px' }} />
+                  <IdcardOutlined className="profile-icon" />
                   ID
                 </span>
               }
@@ -102,7 +91,7 @@ const Profile = () => {
             <Descriptions.Item 
               label={
                 <span>
-                  <UserOutlined style={{ marginRight: '8px' }} />
+                  <UserOutlined className="profile-icon" />
                   Họ và tên
                 </span>
               }
@@ -113,7 +102,7 @@ const Profile = () => {
             <Descriptions.Item 
               label={
                 <span>
-                  <UserOutlined style={{ marginRight: '8px' }} />
+                  <UserOutlined className="profile-icon" />
                   Tên đăng nhập
                 </span>
               }
@@ -124,7 +113,7 @@ const Profile = () => {
             <Descriptions.Item 
               label={
                 <span>
-                  <MailOutlined style={{ marginRight: '8px' }} />
+                  <MailOutlined className="profile-icon" />
                   Email
                 </span>
               }
@@ -133,8 +122,8 @@ const Profile = () => {
             </Descriptions.Item>
           </Descriptions>
 
-          <div style={{ marginTop: '24px', padding: '16px', background: '#fafafa', borderRadius: '4px' }}>
-            <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+          <div className="profile-note">
+            <p>
               💡 <strong>Lưu ý:</strong> Thông tin này được lưu trong Redux store và localStorage. 
               Dữ liệu sẽ được giữ nguyên ngay cả khi bạn refresh trang.
             </p>

@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@800&display=swap");
+
+.home {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Background dạng Dot */
+  background-color: #f0f2f5;
+  background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+  background-size: 20px 20px; /* Khoảng cách giữa các dấu chấm */
+  width: 100vw;
+  overflow: hidden;
+}
+
+.home-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.home-container h1 {
+  -webkit-backdrop-filter: blur(8px);
+  font-family: "Lexend", sans-serif;
+  font-size: clamp(2rem, 8vw, 5rem); /* Tự động co giãn cỡ chữ */
+  font-weight: 800;
+  text-align: center;
+
+  /* Hiệu ứng đổ bóng và màu sắc */
+  color: #1890ff;
+  text-shadow: 4px 4px 0px rgba(24, 144, 255, 0.1);
+
+  /* Khung kính (Glassmorphism) bao quanh chữ */
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+
+  padding: 40px 60px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+  /* Hiệu ứng xuất hiện */
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Hiệu ứng bay bổng nhẹ nhàng */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
