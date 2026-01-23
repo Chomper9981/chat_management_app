@@ -1,8 +1,10 @@
-import { Avatar } from "antd";
+import { Avatar, Button } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import "./Header.css";
 import { Dropdown } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../action/actions";
 
 const items = [
   {
@@ -16,7 +18,15 @@ const items = [
 ];
 
 const Header = () => {
+  const { myInfo, isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
   return (
     <div className="header-container">
       <img
@@ -26,17 +36,36 @@ const Header = () => {
         onClick={() => navigate("/conversations")}
       />
       <span className="header-title">Chat Management</span>
-      <Dropdown
-        trigger={["click"]}
-        menu={{
-          items,
-          onClick: ({ key }) => {
-            if (key === "1") navigate("/profile");
-          },
-        }}
-      >
-        <Avatar className="header-avatar" icon={<UserOutlined />} />
-      </Dropdown>
+      {!isLoginPage && (
+        <>
+          {!isAuthenticated && (
+            <Button type="primary" onClick={() => navigate("/login")}>
+              Đăng nhập
+            </Button>
+          )}
+
+          {isAuthenticated && myInfo && (
+            <Dropdown
+              trigger={["click"]}
+              menu={{
+                items,
+                onClick: ({ key }) => {
+                  if (key === "1") navigate("/profile");
+                  if (key === "2") {
+                    handleLogout();
+                  }
+                },
+              }}
+            >
+              <Avatar
+                className="header-avatar"
+                src={myInfo.avatar}
+                icon={<UserOutlined />}
+              />
+            </Dropdown>
+          )}
+        </>
+      )}
     </div>
   );
 };
