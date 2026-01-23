@@ -23,6 +23,13 @@ const Header = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
+  const handleLogoClick = () => {
+  if (isAuthenticated) {
+    navigate("/conversations");
+  } else {
+    navigate("/");
+  }
+};
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
@@ -33,7 +40,7 @@ const Header = () => {
         src="/mail.svg"
         alt="Logo"
         className="header-logo"
-        onClick={() => navigate("/conversations")}
+        onClick={handleLogoClick}
       />
       <span className="header-title">Chat Management</span>
       {!isLoginPage && (
