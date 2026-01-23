@@ -1,28 +1,34 @@
-import React from 'react';
-import { Card, Descriptions, Button, Avatar, Space } from 'antd';
-import { UserOutlined, MailOutlined, IdcardOutlined, LogoutOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../action/actions';
-import Header from '../components/shared/Header.jsx';
-import './Profile.css';
+import React from "react";
+import { Card, Descriptions, Button, Avatar, Space } from "antd";
+import {
+  UserOutlined,
+  MailOutlined,
+  IdcardOutlined,
+  LogoutOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../action/actions";
+import Header from "../components/shared/Header.jsx";
+import "./Profile.css";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   // Lấy myInfo từ Redux store
   const { myInfo, isAuthenticated } = useSelector((state) => state.auth);
 
   // Xử lý logout
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
 
   // Xử lý quay lại trang conversations
   const handleBack = () => {
-    navigate('/conversations');
+    navigate("/conversations");
   };
 
   // Nếu chưa đăng nhập, hiển thị thông báo
@@ -33,7 +39,7 @@ const Profile = () => {
         <div className="profile-not-authenticated">
           <Card>
             <p>Bạn chưa đăng nhập. Vui lòng đăng nhập để xem thông tin.</p>
-            <Button type="primary" onClick={() => navigate('/login')}>
+            <Button type="primary" onClick={() => navigate("/login")}>
               Đăng nhập
             </Button>
           </Card>
@@ -50,34 +56,27 @@ const Profile = () => {
           className="profile-card"
           title={
             <div className="profile-card-title">
-              <Avatar size={48} icon={<UserOutlined />} />
+              <Avatar size={48} icon={<UserOutlined />} src={myInfo.avatar} />
               <span>Thông tin cá nhân</span>
             </div>
           }
           extra={
             <Space>
-              <Button 
-                icon={<ArrowLeftOutlined />}
-                onClick={handleBack}
-              >
+              <Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
                 Quay lại
               </Button>
-              <Button 
-                danger 
-                icon={<LogoutOutlined />}
-                onClick={handleLogout}
-              >
+              <Button danger icon={<LogoutOutlined />} onClick={handleLogout}>
                 Đăng xuất
               </Button>
             </Space>
           }
         >
-          <Descriptions 
-            bordered 
-            column={1} 
-            labelStyle={{ fontWeight: 'bold', width: '150px' }}
+          <Descriptions
+            bordered
+            column={1}
+            styleslabel={{ fontWeight: "bold", width: "150px" }}
           >
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span>
                   <IdcardOutlined className="profile-icon" />
@@ -88,7 +87,7 @@ const Profile = () => {
               {myInfo.id}
             </Descriptions.Item>
 
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span>
                   <UserOutlined className="profile-icon" />
@@ -99,7 +98,7 @@ const Profile = () => {
               {myInfo.name}
             </Descriptions.Item>
 
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span>
                   <UserOutlined className="profile-icon" />
@@ -110,7 +109,7 @@ const Profile = () => {
               {myInfo.username}
             </Descriptions.Item>
 
-            <Descriptions.Item 
+            <Descriptions.Item
               label={
                 <span>
                   <MailOutlined className="profile-icon" />
@@ -121,13 +120,6 @@ const Profile = () => {
               {myInfo.gmail}
             </Descriptions.Item>
           </Descriptions>
-
-          <div className="profile-note">
-            <p>
-              💡 <strong>Lưu ý:</strong> Thông tin này được lưu trong Redux store và localStorage. 
-              Dữ liệu sẽ được giữ nguyên ngay cả khi bạn refresh trang.
-            </p>
-          </div>
         </Card>
       </div>
     </div>

@@ -5,32 +5,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../action/actions";
 import Header from "../components/shared/Header.jsx";
 import "./Login.css";
-
-const Data = {
-  users: [
-    {
-      id: 1,
-      name: "Alice",
-      Password: "123456",
-      username: "alice",
-      gmail: "alice@example.com",
-    },
-    {
-      id: 2,
-      name: "Bob",
-      Password: "abcdef",
-      username: "bob",
-      gmail: "bob@example.com",
-    },
-    {
-      id: 3,
-      name: "Charlie",
-      Password: "ghijkl",
-      username: "charlie",
-      gmail: "charlie@example.com",
-    },
-  ],
-};
+import {Accounts} from "../mocks/mockAccounts.js"
 
 const Login = () => {
   const navigate = useNavigate();
@@ -39,7 +14,7 @@ const Login = () => {
 
   const onFinish = (values) => {
     // Tìm user trong data
-    const user = Data.users.find(
+    const user = Accounts.find(
       (u) => u.username === values.username && u.Password === values.password
     );
 
@@ -50,6 +25,7 @@ const Login = () => {
         name: user.name,
         username: user.username,
         gmail: user.gmail,
+        avatar: user.avatar,
       };
 
       // Dispatch action để lưu vào Redux
@@ -107,9 +83,10 @@ const Login = () => {
           <div className="login-demo-accounts">
             <p>Tài khoản demo:</p>
             <ul>
-              <li>alice / 123456</li>
-              <li>bob / abcdef</li>
-              <li>charlie / ghijkl</li>
+              <li>aaa / 123</li>
+              <li>bbb / 123</li>
+              <li>ccc / 123</li>
+              <li>ddd / 123</li>
             </ul>
           </div>
         </Form>

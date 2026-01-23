@@ -33,7 +33,8 @@ function ConversationsLayOut() {
       {!selectedUserId && (
         <div className="empty">
           
-          <h1>Chưa có cuộc trò chuyện nào, hãy bắt đầu ngay.</h1>
+          <h1>Chưa có cuộc trò chuyện nào</h1>
+          <h1>Hãy bắt đầu ngay</h1>
         </div>
       )}
       {selectedUserId && selectedUser && (

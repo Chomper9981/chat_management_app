@@ -42,21 +42,6 @@
   margin-right: 8px;
 }
 
-/* Profile Note */
-.profile-note {
-  margin-top: 24px;
-  padding: 16px;
-  background: #fafafa;
-  border-radius: 4px;
-}
-
-.profile-note p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .profile-card {
