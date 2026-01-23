@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../action/actions";
+import { logout } from "../action/actions.js";
 import Header from "../components/shared/Header.jsx";
 import "./Profile.css";
 

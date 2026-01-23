@@ -1,44 +1,18 @@
-import "./Message.css";
-import { Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import './Message.css'
 
-export default function Message({
-  type,
-  text,
-  avatar,
-  timestamp,
-  status,
-  isGroupStart,
-  isGroupEnd,
-  showAvatar,
-}) {
+function Message({ type, text, avatar, timestamp }) {
   return (
     <div className={`message-row ${type}`}>
-      {type === "received" && showAvatar && (
-        <Avatar className="chatting-avatar" icon={<UserOutlined />} src={avatar} />
+      {type === "received" && avatar && (
+        <img src={avatar} alt="avatar" className="message-avatar" />
       )}
 
-      <div className="message-wrapper">
-        <div
-          className={`
-            message-bubble
-            ${type}
-            ${isGroupStart ? "group-start" : ""}
-            ${isGroupEnd ? "group-end" : ""}
-          `}
-        >
-          <span className="message-text">{text}</span>
-        </div>
-
-        {isGroupEnd && (
-          <div className="message-meta">
-            <span className="timestamp">{timestamp}</span>
-            {type === "sent" && (
-              <span className={`status ${status}`}>{status}</span>
-            )}
-          </div>
-        )}
+      <div className="message-bubble">
+        <p>{text}</p>
+        <span className="message-time">{timestamp}</span>
       </div>
     </div>
   );
 }
+
+export default Message;

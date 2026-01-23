@@ -5,7 +5,7 @@ import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import Conversations from "./pages/Conversations.jsx";
 import ConversationsArea from "./pages/ConversationArea.jsx";
-import Profile from "./pages/Profile.jsx";
+import Profile from "./pages/profile.jsx";
 import PrivateRoute from "./components/shared/PrivateRoute.jsx";
 
 const App = () => {

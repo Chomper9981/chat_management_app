@@ -1,32 +1,23 @@
-import Message from "./Message";
-import "./MessageList.css";
+import Message from "./Message.jsx";
 
-export default function MessageList({ messages, currentUser }) {
+function MessageList({ messages, currentUser, chattingUser }) {
   return (
     <div className="message-list">
-      {messages.map((msg, index) => {
-        const prevMsg = messages[index - 1];
-        const nextMsg = messages[index + 1];
-
-        const isSameSenderAsPrev =
-          prevMsg && prevMsg.senderId === msg.senderId;
-        const isSameSenderAsNext =
-          nextMsg && nextMsg.senderId === msg.senderId;
-
-        const isGroupStart = !isSameSenderAsPrev;
-        const isGroupEnd = !isSameSenderAsNext;
+      {messages.map((msg) => {
+        const isSent = msg.senderId === currentUser.id;
 
         return (
           <Message
             key={msg.id}
-            {...msg}
-            type={msg.senderId === currentUser.id ? "sent" : "received"}
-            isGroupStart={isGroupStart}
-            isGroupEnd={isGroupEnd}
-            showAvatar={isGroupEnd}
+            type={isSent ? "sent" : "received"}
+            text={msg.content}
+            avatar={!isSent ? chattingUser.avatar : null}
+            timestamp={msg.createdAt}
           />
         );
       })}
     </div>
   );
 }
+
+export default MessageList;

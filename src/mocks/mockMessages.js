@@ -1,42 +1,30 @@
-export const currentUser = {
-  id: "u1",
-  name: "You",
-};
-
-export const mockMessages = [
+export const Messages = [
   {
     id: 1,
-    senderId: "u2",
-    avatar: "https://i.pravatar.cc/40?img=32",
-    text: "Hello!",
-    timestamp: "10:30 AM",
+    senderId: 1,
+    receiverId: 2,
+    content: "Chào bạn, dạo này thế nào?",
+    createdAt: "2026-01-22T10:30:00",
   },
   {
     id: 2,
-    senderId: "u2",
-    avatar: "https://i.pravatar.cc/40?img=32",
-    text: "How are you?",
-    timestamp: "10:30 AM",
+    senderId: 2,
+    receiverId: 1,
+    content: "Mình ổn, còn bạn?",
+    createdAt: "2026-01-22T10:31:00",
   },
   {
     id: 3,
-    senderId: "u1",
-    text: "Hi there!",
-    timestamp: "10:31 AM",
-    status: "seen",
+    senderId: 1,
+    receiverId: 2,
+    content: "Mình đang làm app chat nè 😄",
+    createdAt: "2026-01-22T10:32:00",
   },
   {
     id: 4,
-    senderId: "u1",
-    text: "I'm doing great 😄",
-    timestamp: "10:31 AM",
-    status: "seen",
-  },
-  {
-    id: 5,
-    senderId: "u2",
-    avatar: "https://i.pravatar.cc/40?img=32",
-    text: "Nice to hear that!",
-    timestamp: "10:32 AM",
+    senderId: 3,
+    receiverId: 1,
+    content: "Tối nay rảnh không?",
+    createdAt: "2026-01-22T21:00:00",
   },
 ];
