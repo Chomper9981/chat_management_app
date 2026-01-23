@@ -1,6 +1,6 @@
 import React from 'react';
-import Header from '../components/Header.jsx';
-import ConversationsLayOut from '../components/ConversationsLayOut.jsx';
+import Header from '../components/shared/Header.jsx';
+import ConversationsLayOut from '../components/conversationComponents/ConversationsLayOut.jsx';
 import './Conversations.css';
 
 const Conversations = () => {

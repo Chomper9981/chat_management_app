@@ -1,10 +1,8 @@
 import { Avatar, Badge } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import "./UserCard.css";
-import { Navigate, useNavigate } from "react-router-dom";
 
 const UserCard = ({
-  id,
   avatar,
   name = "Người dùng",
   isOnline = false,
@@ -16,16 +14,10 @@ const UserCard = ({
   isActive,
 }) => {
 
-  const navigate = useNavigate();
-  const handleOnClick = () => {
-    onClick?.();
-    navigate(`/conversations/${id}`);
-  };
-
   return (
     <div 
       className={`user-card ${isActive ? "active" : ""}`}
-      onClick={handleOnClick}
+      onClick={onClick}
     >
       <Badge
         dot

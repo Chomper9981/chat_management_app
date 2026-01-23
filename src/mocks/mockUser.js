@@ -2,7 +2,7 @@ export const Users = [
   {
     id: 1,
     name: "Nguyễn Văn A",
-    avatar: "https://i.pravatar.cc/40?img=32",
+    avatar: "https://i.pravatar.cc/40?img=11",
     isOnline: true,
     hasUnread: true,
     lastMessage: "Chào bạn, hẹn gặp lại nhé!",
@@ -12,7 +12,7 @@ export const Users = [
   {
     id: 2,
     name: "Trần Thị B",
-    avatar: "https://i.pravatar.cc/40?img=33",
+    avatar: "https://i.pravatar.cc/40?img=34",
     isOnline: true,
     hasUnread: false,
     lastMessage: "Cảm ơn bạn nhiều",
@@ -22,7 +22,7 @@ export const Users = [
   {
     id: 3,
     name: "Lê Văn C",
-    avatar: "https://i.pravatar.cc/40?img=34",
+    avatar: "https://i.pravatar.cc/40?img=12",
     isOnline: false,
     hasUnread: true,
     lastMessage: "Oki bạn",

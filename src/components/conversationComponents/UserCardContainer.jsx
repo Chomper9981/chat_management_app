@@ -19,7 +19,7 @@ const UserCardContainer = ({Users, onUserSelect, selectedUserId}) => {
           timestamp={user.timestamp}
           unreadCount={user.unreadCount}
           onClick={() => onUserSelect(user)}
-          isActive={selectedUserId === user.id}
+          isActive={user.id === selectedUserId}
         />
       ))}
     </div>

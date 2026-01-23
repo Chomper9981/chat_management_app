@@ -2,6 +2,7 @@ import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import "./Header.css";
 import { Dropdown } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const items = [
   {
@@ -15,11 +16,25 @@ const items = [
 ];
 
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <div className="header-container">
-      <img src="/mail.svg" alt="Logo" className="header-logo" />
+      <img
+        src="/mail.svg"
+        alt="Logo"
+        className="header-logo"
+        onClick={() => navigate("/conversations")}
+      />
       <span className="header-title">Chat Management</span>
-      <Dropdown menu={{ items }} trigger={["click"]}>
+      <Dropdown
+        trigger={["click"]}
+        menu={{
+          items,
+          onClick: ({ key }) => {
+            if (key === "1") navigate("/profile");
+          },
+        }}
+      >
         <Avatar className="header-avatar" icon={<UserOutlined />} />
       </Dropdown>
     </div>

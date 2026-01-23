@@ -1,7 +1,6 @@
-import MessageList from "./MessageList";
+import MessageList from "../components/messageComponents/MessageList";
 import "./ConversationArea.css";
-import { mockMessages, currentUser } from "../mocks/mockMessages";
-
+import { mockMessages, currentUser } from "../mocks/mockMessages"
 export default function ConversationArea() {
   return (
     <div className="conversation-area">

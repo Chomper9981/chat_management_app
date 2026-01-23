@@ -1,22 +1,25 @@
-import { useState } from "react";
-import { Layout, Button, Avatar } from "antd";
-import { MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { Layout, Avatar } from "antd";
+import { UserOutlined, MessageOutlined } from "@ant-design/icons";
+import { useParams, useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar.jsx";
 import UserCardContainer from "./UserCardContainer.jsx";
-import ConversationArea from "./ConversationArea.jsx";
+import ConversationArea from "../../pages/ConversationArea.jsx";
 import ChatSubmit from "./ChatSubmit.jsx";
 import "./ConversationsLayOut.css";
-import { Users } from "../mocks/mockUser";
+import { Users } from "../../mocks/mockUser.js";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 function ConversationsLayOut() {
-  const [selectedUser, setSelectedUser] = useState(null);
-
+  const { userId } = useParams();
+  const navigate = useNavigate();
   const handleUserSelect = (user) => {
-    setSelectedUser(user);
+    navigate(`/conversations/${user.id}`);
   };
-
+  const selectedUserId = userId ? Number(userId) : null;
+  const selectedUser = selectedUserId
+    ? Users.find((u) => u.id === selectedUserId)
+    : null;
   return (
     <Layout className="conversations-layout">
       <Sider width={300} className="conversations-sider">
@@ -24,20 +27,24 @@ function ConversationsLayOut() {
         <UserCardContainer
           Users={Users}
           onUserSelect={handleUserSelect}
-          selectedUserId={selectedUser?.id}
+          selectedUserId={selectedUserId}
         />
       </Sider>
-      {selectedUser != null && (
+      {!selectedUserId && (
+        <div className="empty">
+          <MessageOutlined />
+          Chưa có cuộc trò chuyện nào, hãy bắt đầu ngay.
+        </div>
+      )}
+      {selectedUserId && selectedUser && (
         <Layout className="conversations-main">
           <Header className="conversations-header">
             <Avatar
               className="chatting-avatar"
               icon={<UserOutlined />}
-              src={selectedUser?.avatar}
+              src={selectedUser.avatar}
             />
-            <span className="chatting-name">
-              {selectedUser?.name || "Chọn cuộc trò chuyện"}
-            </span>
+            <span className="chatting-name">{selectedUser.name}</span>
           </Header>
           <Content className="conversations-content">
             <ConversationArea />
