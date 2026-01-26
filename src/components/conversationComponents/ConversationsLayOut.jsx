@@ -8,24 +8,27 @@ import ConversationArea from "../../pages/ConversationArea.jsx";
 import ChatSubmit from "./ChatSubmit.jsx";
 import "./ConversationsLayOut.css";
 import { Users } from "../../mocks/mockUser.js";
-import { Messages } from "../../mocks/mockMessages.js";
+// import { Messages } from "../../mocks/mockMessages.js";
 import { v4 as uuidv4 } from "uuid";
-import { useSelector } from "react-redux";
-import { formatRelativeTime } from '../../utils/dateUtils';
+import { useSelector, useDispatch } from "react-redux";
+import { addMessage, markMessagesAsRead } from "../../action/actions.js";
+import { formatRelativeTime } from "../../utils/dateUtils";
 const { Header, Content, Footer, Sider } = Layout;
 
 function ConversationsLayOut() {
+  const messages = useSelector((state) => state.messages.messages);
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.myInfo);
-  const [message, setMessage] = useState(Messages);
+  // const [message, setMessage] = useState(Messages);
   const { userId } = useParams();
   const navigate = useNavigate();
   const handleUserSelect = (user) => {
     navigate(`/conversations/${user.id}`);
-    markMessagesAsRead(user.id);
+    dispatch(markMessagesAsRead(user.id, currentUser.id));
   };
   const getLastMessageForUser = (userId) => {
     // Lọc tin nhắn giữa currentUser và userId
-    const userMessages = message.filter(
+    const userMessages = messages.filter(
       (msg) =>
         (msg.senderId === currentUser.id && msg.receiverId === userId) ||
         (msg.senderId === userId && msg.receiverId === currentUser.id),
@@ -44,25 +47,9 @@ function ConversationsLayOut() {
     };
   };
 
-  const markMessagesAsRead = (userId) => {
-    setMessage((prev) =>
-      prev.map((msg) => {
-        // Chỉ đánh dấu tin nhắn từ userId gửi cho currentUser
-        if (
-          msg.senderId === userId &&
-          msg.receiverId === currentUser.id &&
-          !msg.isRead
-        ) {
-          return { ...msg, isRead: true };
-        }
-        return msg;
-      }),
-    );
-  };
-
   const getUnreadInfo = (userId) => {
     // Lọc tin nhắn CHƯA ĐỌC từ userId gửi cho currentUser
-    const unreadMessages = message.filter(
+    const unreadMessages = messages.filter(
       (msg) =>
         msg.senderId === userId &&
         msg.receiverId === currentUser.id &&
@@ -90,7 +77,8 @@ function ConversationsLayOut() {
       createdAt: new Date().toISOString(),
       isRead: false,
     };
-    setMessage((prev) => [...prev, newMessage]);
+    // setMessage((prev) => [...prev, newMessage]);
+    dispatch(addMessage(newMessage));
     console.log(newMessage);
   };
 
@@ -125,7 +113,7 @@ function ConversationsLayOut() {
           <Content className="conversations-content">
             <ConversationArea
               chattingUser={selectedUser}
-              newMessages={message}
+              newMessages={messages}
             />
           </Content>
 
