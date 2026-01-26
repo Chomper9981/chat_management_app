@@ -186,3 +186,24 @@
     display: none;
   }
 }
+
+.user-card-delete-btn {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+  margin-left: auto;
+  transition: color 0.2s;
+}
+
+.user-card-delete-btn:hover {
+  color: #ff4d4f;
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

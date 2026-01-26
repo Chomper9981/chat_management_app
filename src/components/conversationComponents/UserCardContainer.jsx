@@ -8,6 +8,8 @@ const UserCardContainer = ({
   selectedUserId,
   getLastMessage,
   getUnreadInfo,
+  showDeleteButton = false,
+  onDeleteUser,
 }) => {
   return (
     <div className="user-card-container">
@@ -29,6 +31,8 @@ const UserCardContainer = ({
             unreadCount={unreadInfo.unreadCount}
             onClick={() => onUserSelect(user)}
             isActive={user.id === selectedUserId}
+            showDeleteButton={showDeleteButton}
+            onDelete={() => onDeleteUser?.(user.id)}
           />
         );
       })}

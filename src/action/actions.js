@@ -4,6 +4,9 @@ import {
   ADD_MESSAGE,
   MARK_MESSAGES_AS_READ,
   DELETE_MESSAGE,
+  REGISTER_SUCCESS,
+  ADD_CONVERSATION,
+  REMOVE_CONVERSATION,
 } from "./types";
 
 // Action để lưu thông tin user sau khi login thành công
@@ -34,4 +37,19 @@ export const markMessagesAsRead = (userId, currentUserId) => ({
 export const deleteMessage = (messageId) => ({
   type: DELETE_MESSAGE,
   payload: messageId,
+});
+
+export const registerSuccess = (account) => ({
+  type: REGISTER_SUCCESS,
+  payload: account,
+});
+
+export const addConversation = (userId) => ({
+  type: ADD_CONVERSATION,
+  payload: userId,
+});
+
+export const removeConversation = (userId) => ({
+  type: REMOVE_CONVERSATION,
+  payload: userId,
 });

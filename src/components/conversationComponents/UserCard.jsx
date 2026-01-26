@@ -12,13 +12,11 @@ const UserCard = ({
   unreadCount = 0,
   onClick,
   isActive,
+  showDeleteButton = false,
+  onDelete,
 }) => {
-
   return (
-    <div 
-      className={`user-card ${isActive ? "active" : ""}`}
-      onClick={onClick}
-    >
+    <div className={`user-card ${isActive ? "active" : ""}`} onClick={onClick}>
       <Badge
         dot
         status={isOnline ? "success" : "default"}
@@ -38,6 +36,17 @@ const UserCard = ({
           </span>
           {timestamp && (
             <span className="user-card-timestamp">{timestamp}</span>
+          )}
+          {showDeleteButton && (
+            <button
+              className="user-card-delete-btn"
+              onClick={(e) => {
+                e.stopPropagation(); // Ngăn trigger onClick của card
+                onDelete?.();
+              }}
+            >
+              ×
+            </button>
           )}
         </div>
 

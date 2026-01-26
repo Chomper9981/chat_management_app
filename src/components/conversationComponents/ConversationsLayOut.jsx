@@ -1,28 +1,79 @@
+import {
+  addMessage,
+  markMessagesAsRead,
+  addConversation,
+  removeConversation,
+} from "../../action/actions.js";
 import { Layout, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import { formatRelativeTime } from "../../utils/dateUtils";
 import SearchBar from "./SearchBar.jsx";
 import UserCardContainer from "./UserCardContainer.jsx";
 import ConversationArea from "../../pages/ConversationArea.jsx";
 import ChatSubmit from "./ChatSubmit.jsx";
 import "./ConversationsLayOut.css";
-import { Users } from "../../mocks/mockUser.js";
-import { v4 as uuidv4 } from "uuid";
-import { useSelector, useDispatch } from "react-redux";
-import { addMessage, markMessagesAsRead } from "../../action/actions.js";
-import { formatRelativeTime } from "../../utils/dateUtils";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 const ConversationsLayOut = () => {
   const messages = useSelector((state) => state.messages.messages);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.myInfo);
+  const accounts = useSelector((state) => state.account.accounts);
   const { userId } = useParams();
   const navigate = useNavigate();
+  const conversationIds = useSelector(
+    (state) => state.conversations.conversationIds,
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  // Lọc accounts theo searchQuery
+  const searchResults = searchQuery.trim()
+    ? accounts.filter((account) =>
+        account.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : [];
+
+  // Danh sách cuộc trò chuyện đã lưu
+  const savedConversations = accounts.filter((account) =>
+    conversationIds.includes(account.id),
+  );
+
+  // Quyết định hiển thị gì: nếu đang search thì hiện kết quả search, không thì hiện saved
+  const displayUsers = searchQuery.trim() ? searchResults : savedConversations;
   const handleUserSelect = (user) => {
     navigate(`/conversations/${user.id}`);
     dispatch(markMessagesAsRead(user.id, currentUser.id));
   };
+
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+  };
+
+  const handleUserSelectFromSearch = (user) => {
+    // Thêm vào danh sách conversations
+    dispatch(addConversation(user.id));
+
+    // Clear search
+    setSearchQuery("");
+
+    // Navigate đến cuộc trò chuyện
+    navigate(`/conversations/${user.id}`);
+    dispatch(markMessagesAsRead(user.id, currentUser.id));
+  };
+
+  const handleDeleteConversation = (userId) => {
+    dispatch(removeConversation(userId));
+
+    // Nếu đang xem cuộc trò chuyện này thì navigate về trang chính
+    if (selectedUserId === userId) {
+      navigate("/conversations");
+    }
+  };
+
   const getLastMessageForUser = (userId) => {
     // Lọc tin nhắn giữa currentUser và userId
     const userMessages = messages.filter(
@@ -59,9 +110,9 @@ const ConversationsLayOut = () => {
     };
   };
 
-  const selectedUserId = userId ? Number(userId) : null;
+  const selectedUserId = userId ? userId : null;
   const selectedUser = selectedUserId
-    ? Users.find((u) => u.id === selectedUserId)
+    ? accounts.find((u) => u.id === selectedUserId)
     : null;
   const handleSendMessage = (text, chattingUser) => {
     if (!currentUser || !chattingUser) return;
@@ -81,13 +132,20 @@ const ConversationsLayOut = () => {
   return (
     <Layout className="conversations-layout">
       <Sider width={300} className="conversations-sider">
-        <SearchBar />
+        <SearchBar
+          onSearch={handleSearchChange}
+          placeholder="Tìm kiếm người dùng..."
+        />
         <UserCardContainer
-          Users={Users}
-          onUserSelect={handleUserSelect}
+          Users={displayUsers}
+          onUserSelect={
+            searchQuery.trim() ? handleUserSelectFromSearch : handleUserSelect
+          }
           selectedUserId={selectedUserId}
           getLastMessage={getLastMessageForUser}
           getUnreadInfo={getUnreadInfo}
+          showDeleteButton={!searchQuery.trim()}
+          onDeleteUser={handleDeleteConversation}
         />
       </Sider>
       {!selectedUserId && (
@@ -123,6 +181,6 @@ const ConversationsLayOut = () => {
       )}
     </Layout>
   );
-}
+};
 
 export default ConversationsLayOut;
