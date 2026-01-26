@@ -1,6 +1,6 @@
-import './Message.css'
+import "./Message.css";
 
-function Message({ type, text, avatar, timestamp }) {
+const Message = ({ type, text, avatar, timestamp }) => {
   return (
     <div className={`message-row ${type}`}>
       {type === "received" && avatar && (
@@ -13,6 +13,6 @@ function Message({ type, text, avatar, timestamp }) {
       </div>
     </div>
   );
-}
+};
 
 export default Message;

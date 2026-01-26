@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Layout, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,18 +7,16 @@ import ConversationArea from "../../pages/ConversationArea.jsx";
 import ChatSubmit from "./ChatSubmit.jsx";
 import "./ConversationsLayOut.css";
 import { Users } from "../../mocks/mockUser.js";
-// import { Messages } from "../../mocks/mockMessages.js";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, useDispatch } from "react-redux";
 import { addMessage, markMessagesAsRead } from "../../action/actions.js";
 import { formatRelativeTime } from "../../utils/dateUtils";
 const { Header, Content, Footer, Sider } = Layout;
 
-function ConversationsLayOut() {
+const ConversationsLayOut = () => {
   const messages = useSelector((state) => state.messages.messages);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.myInfo);
-  // const [message, setMessage] = useState(Messages);
   const { userId } = useParams();
   const navigate = useNavigate();
   const handleUserSelect = (user) => {
@@ -77,7 +74,6 @@ function ConversationsLayOut() {
       createdAt: new Date().toISOString(),
       isRead: false,
     };
-    // setMessage((prev) => [...prev, newMessage]);
     dispatch(addMessage(newMessage));
     console.log(newMessage);
   };

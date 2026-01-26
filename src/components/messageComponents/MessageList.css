@@ -5,3 +5,22 @@
   flex-direction: column;
   gap: 2px;
 }
+
+.message-wrapper {
+  display: flex;              /* Flex layout để nằm cùng hàng */
+  align-items: flex-start;    /* Căn trên cùng */
+  justify-content: flex-end;  /* Căn bên phải (cho tin gửi) */
+  gap: 8px;                   /* Khoảng cách giữa Message và icon */
+  
+}
+
+
+.message-options-icon {
+  margin-top: 8px;            /* Căn icon với phần đầu tin nhắn */
+  opacity: 0.6;               /* Mờ một chút */
+  transition: opacity 0.2s;   /* Hiệu ứng mượt */
+}
+
+.message-options-icon:hover {
+  opacity: 1;                 /* Đậm hơn khi hover */
+}

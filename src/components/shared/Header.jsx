@@ -1,7 +1,6 @@
-import { Avatar, Button } from "antd";
+import { Avatar, Button, Dropdown } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import "./Header.css";
-import { Dropdown } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../action/actions";

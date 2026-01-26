@@ -1,7 +1,11 @@
-import { ADD_MESSAGE, MARK_MESSAGES_AS_READ } from "../action/types";
+import {
+  ADD_MESSAGE,
+  MARK_MESSAGES_AS_READ,
+  DELETE_MESSAGE,
+} from "../action/types";
 
 const initialState = {
-  messages: [], 
+  messages: [],
 };
 
 // Load từ localStorage
@@ -16,15 +20,16 @@ if (savedMessages) {
 
 const messageReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_MESSAGE:
+    case ADD_MESSAGE: {
       const newMessages = [...state.messages, action.payload];
       localStorage.setItem("messages", JSON.stringify(newMessages));
       return {
         ...state,
         messages: newMessages,
       };
+    }
 
-    case MARK_MESSAGES_AS_READ:
+    case MARK_MESSAGES_AS_READ: {
       const { userId, currentUserId } = action.payload;
       const updatedMessages = state.messages.map((msg) => {
         if (
@@ -41,6 +46,20 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         messages: updatedMessages,
       };
+    }
+
+    case DELETE_MESSAGE: {
+      const filteredMessages = state.messages.filter(
+        (msg) => msg.id !== action.payload,
+      );
+
+      localStorage.setItem("messages", JSON.stringify(filteredMessages));
+
+      return {
+        ...state,
+        messages: filteredMessages,
+      };
+    }
 
     default:
       return state;
