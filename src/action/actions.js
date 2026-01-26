@@ -1,4 +1,4 @@
-import { LOGIN_SUCCESS, LOGOUT } from './types';
+import { LOGIN_SUCCESS, LOGOUT, ADD_MESSAGE, MARK_MESSAGES_AS_READ } from './types';
 
 // Action để lưu thông tin user sau khi login thành công
 export const loginSuccess = (userInfo) => ({
@@ -14,3 +14,13 @@ export const logout = () => {
     type: LOGOUT,
   };
 };
+
+export const addMessage = (message) => ({
+  type: ADD_MESSAGE,
+  payload: message,
+});
+
+export const markMessagesAsRead = (userId, currentUserId) => ({
+  type: MARK_MESSAGES_AS_READ,
+  payload: { userId, currentUserId },
+});

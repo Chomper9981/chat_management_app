@@ -1,4 +1,5 @@
 import Message from "./Message.jsx";
+import { formatMessageTime } from '../../utils/dateUtils';
 
 function MessageList({ messages, currentUser, chattingUser }) {
   return (
@@ -12,7 +13,7 @@ function MessageList({ messages, currentUser, chattingUser }) {
             type={isSent ? "sent" : "received"}
             text={msg.content}
             avatar={!isSent ? chattingUser.avatar : null}
-            timestamp={msg.createdAt}
+            timestamp={formatMessageTime(msg.createdAt)}
           />
         );
       })}

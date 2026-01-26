@@ -8,17 +8,71 @@ import ConversationArea from "../../pages/ConversationArea.jsx";
 import ChatSubmit from "./ChatSubmit.jsx";
 import "./ConversationsLayOut.css";
 import { Users } from "../../mocks/mockUser.js";
+import { Messages } from "../../mocks/mockMessages.js";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
+import { formatRelativeTime } from '../../utils/dateUtils';
 const { Header, Content, Footer, Sider } = Layout;
 
 function ConversationsLayOut() {
   const currentUser = useSelector((state) => state.auth.myInfo);
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState(Messages);
   const { userId } = useParams();
   const navigate = useNavigate();
   const handleUserSelect = (user) => {
     navigate(`/conversations/${user.id}`);
+    markMessagesAsRead(user.id);
+  };
+  const getLastMessageForUser = (userId) => {
+    // Lọc tin nhắn giữa currentUser và userId
+    const userMessages = message.filter(
+      (msg) =>
+        (msg.senderId === currentUser.id && msg.receiverId === userId) ||
+        (msg.senderId === userId && msg.receiverId === currentUser.id),
+    );
+
+    if (userMessages.length === 0) return null;
+
+    // Lấy tin nhắn cuối cùng (sort theo createdAt)
+    const lastMsg = userMessages.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    )[0];
+
+    return {
+      content: lastMsg.content,
+      timestamp: formatRelativeTime(lastMsg.createdAt),
+    };
+  };
+
+  const markMessagesAsRead = (userId) => {
+    setMessage((prev) =>
+      prev.map((msg) => {
+        // Chỉ đánh dấu tin nhắn từ userId gửi cho currentUser
+        if (
+          msg.senderId === userId &&
+          msg.receiverId === currentUser.id &&
+          !msg.isRead
+        ) {
+          return { ...msg, isRead: true };
+        }
+        return msg;
+      }),
+    );
+  };
+
+  const getUnreadInfo = (userId) => {
+    // Lọc tin nhắn CHƯA ĐỌC từ userId gửi cho currentUser
+    const unreadMessages = message.filter(
+      (msg) =>
+        msg.senderId === userId &&
+        msg.receiverId === currentUser.id &&
+        msg.isRead === false,
+    );
+
+    return {
+      hasUnread: unreadMessages.length > 0,
+      unreadCount: unreadMessages.length,
+    };
   };
 
   const selectedUserId = userId ? Number(userId) : null;
@@ -34,10 +88,12 @@ function ConversationsLayOut() {
       receiverId: chattingUser.id,
       content: text,
       createdAt: new Date().toISOString(),
+      isRead: false,
     };
     setMessage((prev) => [...prev, newMessage]);
-    console.log(message);
+    console.log(newMessage);
   };
+
   return (
     <Layout className="conversations-layout">
       <Sider width={300} className="conversations-sider">
@@ -46,6 +102,8 @@ function ConversationsLayOut() {
           Users={Users}
           onUserSelect={handleUserSelect}
           selectedUserId={selectedUserId}
+          getLastMessage={getLastMessageForUser}
+          getUnreadInfo={getUnreadInfo}
         />
       </Sider>
       {!selectedUserId && (
@@ -65,7 +123,10 @@ function ConversationsLayOut() {
             <span className="chatting-name">{selectedUser.name}</span>
           </Header>
           <Content className="conversations-content">
-            <ConversationArea chattingUser={selectedUser} />
+            <ConversationArea
+              chattingUser={selectedUser}
+              newMessages={message}
+            />
           </Content>
 
           <Footer className="conversations-footer">

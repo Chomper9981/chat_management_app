@@ -1,2 +1,7 @@
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-export const LOGOUT = 'LOGOUT';
+export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+export const LOGOUT = "LOGOUT";
+
+export const ADD_MESSAGE = "ADD_MESSAGE";
+export const MARK_MESSAGES_AS_READ = "MARK_MESSAGES_AS_READ";
+export const DELETE_MESSAGE = "DELETE_MESSAGE";
+export const LOAD_MESSAGES = "LOAD_MESSAGES";
