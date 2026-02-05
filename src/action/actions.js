@@ -7,6 +7,10 @@ import {
   REGISTER_SUCCESS,
   ADD_CONVERSATION,
   REMOVE_CONVERSATION,
+  CREATE_CHATBOX,
+  UPDATE_CHATBOX_NAME,
+  DELETE_CHATBOX,
+  ADD_CHAT,
 } from "./types";
 
 // Action để lưu thông tin user sau khi login thành công
@@ -53,3 +57,23 @@ export const removeConversation = (userId) => ({
   type: REMOVE_CONVERSATION,
   payload: userId,
 });
+
+export const createChatBox = (chatBox) => ({
+  type: CREATE_CHATBOX,
+  payload: chatBox,
+});
+
+export const addChat = (chat) => ({
+  type: ADD_CHAT,
+  payload: chat,
+});
+
+export const deleteChatBox = (chatBoxId) => ({
+  type: DELETE_CHATBOX,
+  payload: chatBoxId,
+});
+
+export const renameChatBox = (chatBoxId, newBoxName) => ({
+  type: UPDATE_CHATBOX_NAME,
+  payload: chatBoxId, newBoxName
+})

@@ -6,14 +6,9 @@ import { useDispatch } from "react-redux";
 import { deleteMessage } from "../../action/actions.js";
 import './MessageList.css';
 
-const items = [
-  {
-    key: "1",
-    label: "Xóa tin nhắn",
-  },
-];
 
-const MessageList = ({ messages, currentUser, chattingUser }) => {
+
+const MessageList = ({ messages, currentUser, chattingUser, items }) => {
   const dispatch = useDispatch();
 
   const handleDelete = (msg) => {
@@ -48,7 +43,7 @@ const MessageList = ({ messages, currentUser, chattingUser }) => {
               timestamp={formatMessageTime(msg.createdAt)}
               
             />
-            <Dropdown
+            {items && (<Dropdown
               trigger={["click"]}
               menu={{
                 items,
@@ -63,7 +58,7 @@ const MessageList = ({ messages, currentUser, chattingUser }) => {
                 className="message-options-icon"
                 
               />
-            </Dropdown>
+            </Dropdown>)}
           </div>
         );
       })}

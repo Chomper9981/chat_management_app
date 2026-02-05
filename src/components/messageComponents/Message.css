@@ -55,16 +55,32 @@
   margin: 0;
 }
 
-/* Thời gian */
 .message-time {
-  display: block;
-  margin-top: 4px;
   font-size: 11px;
   opacity: 0.6;
-  text-align: right;
 }
 
-/* Thời gian bên received căn trái */
-.message-row.received .message-time {
-  text-align: left;
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
 }
+
+.message-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.message-actions .anticon {
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.message-actions .anticon:hover {
+  opacity: 1;
+}
+

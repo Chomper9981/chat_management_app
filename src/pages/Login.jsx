@@ -38,7 +38,6 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <Header />
       <div className="login-container">
         <Form
           form={form}

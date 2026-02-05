@@ -1,0 +1,6 @@
+.create-bot-layout {
+  height: calc(100vh - 64px);
+  width: 100vw;
+  background: #ffffff;
+  border-radius: 10px;
+}

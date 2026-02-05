@@ -1,0 +1,32 @@
+.toolbar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: nowrap;
+}
+
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.toolbar-search {
+  flex: 1;
+  max-width: 300px;
+  margin-left: auto;
+}
+
+.toolbar-right-section {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-sort-dropdown {
+    width: 100px;
+}

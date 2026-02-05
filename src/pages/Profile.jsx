@@ -50,7 +50,6 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <Header />
       <div className="profile-container">
         <Card
           className="profile-card"

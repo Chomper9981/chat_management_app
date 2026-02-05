@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@800&display=swap");
 
 .home {
-  height: 100vh;
+  height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   /* Background dạng Dot */

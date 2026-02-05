@@ -13,7 +13,6 @@ const SearchBar = ({ onSearch, placeholder = "Tìm kiếm..." }) => {
 
   const handleChange = (e) => {
     setSearchValue(e.target.value);
-    // todo: real-time search
     onSearch?.(e.target.value);
   };
 

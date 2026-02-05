@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import MessageList from "../components/messageComponents/MessageList.jsx";
 
-const ConversationArea = ({ chattingUser, newMessages = [] }) => {
+const ConversationArea = ({ chattingUser, newMessages = [], items }) => {
   const currentUser = useSelector((state) => state.auth.myInfo);
 
   if (!currentUser || !chattingUser) {
@@ -21,6 +21,7 @@ const ConversationArea = ({ chattingUser, newMessages = [] }) => {
       messages={conversationMessages}
       currentUser={currentUser}
       chattingUser={chattingUser}
+      items = {items}
     />
   );
 }

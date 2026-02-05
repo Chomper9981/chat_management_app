@@ -1,0 +1,8 @@
+.dashboard-header-container {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  justify-content: center;
+}

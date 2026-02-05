@@ -1,6 +1,6 @@
 /* Login Page Container */
 .login-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   width: 100vw;
   background: #f0f2f5;
 }

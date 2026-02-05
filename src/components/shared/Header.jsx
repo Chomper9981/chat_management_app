@@ -12,8 +12,16 @@ const items = [
   },
   {
     key: "2",
-    label: "Đăng xuất",
+    label: "Tin nhắn",
   },
+  {
+    key: "3",
+    label: "Bảng điều khiển",
+  },
+  {
+    key: "4",
+    label: "Đăng xuất",
+  }
 ];
 
 const Header = () => {
@@ -24,7 +32,7 @@ const Header = () => {
   const isLoginPage = location.pathname === "/login";
   const handleLogoClick = () => {
   if (isAuthenticated) {
-    navigate("/conversations");
+    navigate("/dashboard");
   } else {
     navigate("/");
   }
@@ -59,7 +67,9 @@ const Header = () => {
                 items,
                 onClick: ({ key }) => {
                   if (key === "1") navigate("/profile");
-                  if (key === "2") {
+                  if (key === "2") navigate("/conversations");
+                  if (key === "3") navigate("/dashboard");
+                  if (key === "4") {
                     handleLogout();
                   }
                 },
