@@ -16,7 +16,10 @@ const Message = ({ type, text, avatar, timestamp }) => {
             <span className="message-time">{timestamp}</span>
             {type === "received" && (
               <CopyOutlined
-                onClick={() => {navigator.clipboard.writeText(text); message.success(`Đã lưu vào clip board`);}}
+                onClick={() => {
+                  navigator.clipboard.writeText(text);
+                  message.success(`Đã lưu vào clip board`);
+                }}
               />
             )}
           </div>
