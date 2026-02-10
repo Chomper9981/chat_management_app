@@ -55,7 +55,7 @@ const App = () => {
             />
 
             <Route
-              path="/dashboard/chatbot/:botId/:conversationId"
+              path="/dashboard/chatbot/:botId"
               element={
                 <PrivateRoute>
                   <ChatBot />

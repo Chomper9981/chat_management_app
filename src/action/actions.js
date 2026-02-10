@@ -11,6 +11,8 @@ import {
   UPDATE_CHATBOX_NAME,
   DELETE_CHATBOX,
   ADD_CHAT,
+  SET_CONVERSATION_MESSAGES,
+  CLEAR_CONVERSATION_OF_DELETED_CHATBOX,
 } from "./types";
 
 // Action để lưu thông tin user sau khi login thành công
@@ -75,5 +77,15 @@ export const deleteChatBox = (chatBoxId) => ({
 
 export const renameChatBox = (chatBoxId, newBoxName) => ({
   type: UPDATE_CHATBOX_NAME,
-  payload: chatBoxId, newBoxName
-})
+  payload: { boxId: chatBoxId, newBoxName },
+});
+
+export const setConversationMessages = (messages) => ({
+  type: SET_CONVERSATION_MESSAGES,
+  payload: messages
+});
+
+export const clearConversationDeletedChatBox = (chatBoxId) => ({
+  type: CLEAR_CONVERSATION_OF_DELETED_CHATBOX,
+  payload: chatBoxId
+});

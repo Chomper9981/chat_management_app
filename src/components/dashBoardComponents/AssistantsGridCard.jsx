@@ -7,7 +7,7 @@ const { Text } = Typography;
 const AssistantsGridCard = ({ data }) => {
   const navigate = useNavigate();
   const handleCardClick = () => {
-    navigate(`/dashboard/chatbot/${data.id}/new`);
+    navigate(`/dashboard/chatbot/${data.id}?message=new`);
   };
   return (
     <div className="card-container">

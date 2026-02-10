@@ -10,11 +10,11 @@ import "./ChatSubmit.css";
 
 const { TextArea } = Input;
 
-const ChatSubmit = ({ onSend, chattingUser, placeholder = "Aa" }) => {
+const ChatSubmit = ({ onSend, chattingUser, placeholder = "Aa", disabled = false }) => {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
-    if (!message.trim() || !chattingUser) return;
+    if (!message.trim() || !chattingUser || disabled) return;
 
     onSend(message, chattingUser);
     setMessage("");
@@ -48,6 +48,7 @@ const ChatSubmit = ({ onSend, chattingUser, placeholder = "Aa" }) => {
           className="chat-submit-icon-btn"
           onClick={handleAttachment}
           aria-label="Attach file"
+          disabled={disabled}
         >
           <PaperClipOutlined />
         </button>
@@ -55,6 +56,7 @@ const ChatSubmit = ({ onSend, chattingUser, placeholder = "Aa" }) => {
           className="chat-submit-icon-btn"
           onClick={handleImage}
           aria-label="Attach image"
+          disabled={disabled}
         >
           <PictureOutlined />
         </button>
@@ -69,6 +71,7 @@ const ChatSubmit = ({ onSend, chattingUser, placeholder = "Aa" }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           autoSize={{ minRows: 1, maxRows: 4 }}
+          disabled={disabled}
           //   bordered={false}
         />
       </div>
@@ -79,13 +82,14 @@ const ChatSubmit = ({ onSend, chattingUser, placeholder = "Aa" }) => {
           className="chat-submit-icon-btn"
           onClick={handleEmoji}
           aria-label="Add emoji"
+          disabled={disabled}
         >
           <SmileOutlined />
         </button>
         <button
           className={`chat-submit-send-btn ${message.trim() ? "active" : ""}`}
           onClick={handleSend}
-          disabled={!message.trim()}
+          disabled={!message.trim() || disabled}
           type="button"
         >
           <SendOutlined />

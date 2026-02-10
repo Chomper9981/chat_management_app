@@ -1,18 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React from "react";
 import "./ChatBox.css";
-import { useDispatch } from "react-redux";
-import { deleteChatBox, renameChatBox } from "../../action/actions";
 import { Dropdown } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 
-const ChatBox = ({ data }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { botId, conversationId } = useParams();
-  const [isRenaming, setIsRenaming] = useState(false);
-  const [newName, setNewName] = useState(data.boxName);
-
+const ChatBox = ({
+  data,
+  isActive,
+  isRenaming,
+  renameValue,
+  onSelect,
+  onStartRename,
+  onRenameChange,
+  onRenameSubmit,
+  onRenameBlur,
+  onDelete,
+  isBotTyping,
+}) => {
   const items = [
     {
       key: "1",
@@ -24,28 +27,12 @@ const ChatBox = ({ data }) => {
     },
   ];
 
-  const triggerRenameInput = () => {
-    setIsRenaming(true);
-  };
-
-  const handleRename = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (newName.trim()) {
-      dispatch(renameChatBox(data.id, newName));
-      setIsRenaming(false);
-    }
-  };
-
-  const handleDelete = (boxId) => {
-    dispatch(deleteChatBox(boxId));
-    navigate(`/dashboard/chatbot/${botId}/new`);
-  };
+  
 
   return (
     <div
-      className={`chatbox-item ${conversationId === data.id ? "chatbox-item-active" : ""}`}
-      onClick={() => navigate(`/dashboard/chatbot/${botId}/${data.id}`)}
+      className={`chatbox-item ${isActive ? "chatbox-item-active" : ""}`}
+      onClick={() => onSelect(data.id)}
       style={{
         cursor: "pointer",
         padding: "10px",
@@ -54,12 +41,15 @@ const ChatBox = ({ data }) => {
     >
       <div className="chatbox-info">
         {isRenaming ? (
-          <form onSubmit={handleRename} onClick={(e) => e.stopPropagation()}>
+          <form
+            onSubmit={(e) => onRenameSubmit(e, data.id)}
+            onClick={(e) => e.stopPropagation()}
+          >
             <input
               type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onBlur={() => setIsRenaming(false)}
+              value={renameValue}
+              onChange={(e) => onRenameChange(e.target.value)}
+              onBlur={onRenameBlur}
               autoFocus
               style={{ width: "100%" }}
             />
@@ -67,17 +57,17 @@ const ChatBox = ({ data }) => {
         ) : (
           <div style={{ display: "flex", alignItems: "center" }}>
             <a>{data.boxName}</a>
-            {conversationId === data.id && (
+            {isActive && !isBotTyping && (
               <Dropdown
                 trigger={["click"]}
                 menu={{
                   items,
                   onClick: ({ key }) => {
                     if (key === "1") {
-                      triggerRenameInput(data.id);
+                      onStartRename(data);
                     }
                     if (key === "2") {
-                      handleDelete(data.id);
+                      onDelete(data.id);
                     }
                   },
                 }}

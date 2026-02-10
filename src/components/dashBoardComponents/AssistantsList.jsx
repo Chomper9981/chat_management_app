@@ -7,7 +7,7 @@ const { Text } = Typography;
 const AssistantsList = ({ data }) => {
   const navigate = useNavigate();
   const handleCardClick = (data) => {
-    navigate(`/dashboard/chatbot/${data.id}/new`);
+    navigate(`/dashboard/chatbot/${data.id}?message=new`);
   };
   
   const columns = [
