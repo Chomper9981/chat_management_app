@@ -13,6 +13,7 @@ import {
   ADD_CHAT,
   SET_CONVERSATION_MESSAGES,
   CLEAR_CONVERSATION_OF_DELETED_CHATBOX,
+  CREATE_IFRAME_BOX,
 } from "./types";
 
 // Action để lưu thông tin user sau khi login thành công
@@ -88,4 +89,9 @@ export const setConversationMessages = (messages) => ({
 export const clearConversationDeletedChatBox = (chatBoxId) => ({
   type: CLEAR_CONVERSATION_OF_DELETED_CHATBOX,
   payload: chatBoxId
+});
+
+export const createIframeBox = (boxConfig) => ({
+  type: CREATE_IFRAME_BOX,
+  payload: boxConfig
 });

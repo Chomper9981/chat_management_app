@@ -14,8 +14,8 @@ const Data = [
     description: "Trợ lý ảo chuyên hỗ trợ khách hàng về sản phẩm B.",
     status: false,
     createdAt: "2024-02-20",
-    },
-    {
+  },
+  {
     id: 3,
     name: "Trợ lý ảo C",
     avatar: `https://i.pravatar.cc/70?img=${Math.floor(Math.random() * 70 + 1)}`,
@@ -23,16 +23,16 @@ const Data = [
     status: true,
 
     createdAt: "2024-03-10",
-    },
-    {
+  },
+  {
     id: 4,
     name: "Trợ lý ảo D",
     avatar: `https://i.pravatar.cc/70?img=${Math.floor(Math.random() * 70 + 1)}`,
     description: "Trợ lý ảo chuyên hỗ trợ khách hàng về sản phẩm D.",
     status: true,
     createdAt: "2024-04-05",
-    },  
-    {
+  },
+  {
     id: 5,
     name: "Trợ lý ảo E",
     avatar: `https://i.pravatar.cc/70?img=${Math.floor(Math.random() * 70 + 1)}`,
@@ -79,6 +79,14 @@ const Data = [
     description: "Trợ lý ảo chuyên hỗ trợ khách hàng về sản phẩm J.",
     status: false,
     createdAt: "2024-06-28",
+  },
+  {
+    id: "664b185ea6f98c29c2a2bfc3",
+    name: "Bot iframe",
+    avatar: `https://i.pravatar.cc/70?img=${Math.floor(Math.random() * 70 + 1)}`,
+    description: "Bot iframe.",
+    status: true,
+    createdAt: "2024-06-29",
   }
-];  
+];
 export default Data;

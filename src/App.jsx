@@ -11,6 +11,7 @@ import LayOut from "./pages/LayOut.jsx";
 import Conversations from "./pages/Conversations.jsx";
 import ChatBot from "./pages/ChatBot.jsx";
 import CreateBot from "./pages/CreateBot.jsx";
+import ChatbotIframe from "./pages/ChatbotIframe.jsx";
   
 const App = () => {
   return (
@@ -68,6 +69,16 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <CreateBot />
+                </PrivateRoute>
+              }
+            />
+
+            {/* STANDALONE IFRAME ROUTE */}
+            <Route
+              path="/bot-iframe/:botId"
+              element={
+                <PrivateRoute>
+                  <ChatbotIframe />
                 </PrivateRoute>
               }
             />

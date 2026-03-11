@@ -47,7 +47,7 @@ const ChatbotIframe = () => {
     return idUser;
   });
 
-  const iframeBoxes = useSelector((state) => state.iframe?.iframeBoxes || []);
+  const iframeBoxes = useSelector((state) => state.iframeBox?.iframeBoxes || []);
 
   // Tìm kiếm xem cặp (inforChat + botId) đã từng tạoc conversation chưa
   const mappedBox = useMemo(() => {

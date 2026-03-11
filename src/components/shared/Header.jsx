@@ -12,7 +12,7 @@ const items = [
   },
   {
     key: "2",
-    label: "Tin nhắn",
+    label: "Bot iframe",
   },
   {
     key: "3",
@@ -21,7 +21,7 @@ const items = [
   {
     key: "4",
     label: "Đăng xuất",
-  }
+  },
 ];
 
 const Header = () => {
@@ -31,12 +31,12 @@ const Header = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
   const handleLogoClick = () => {
-  if (isAuthenticated) {
-    navigate("/dashboard");
-  } else {
-    navigate("/");
-  }
-};
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
+  };
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
@@ -54,9 +54,9 @@ const Header = () => {
         <>
           {!isAuthenticated && (
             <div className="btn">
-            <Button type="primary" onClick={() => navigate("/login")}>
-              Đăng nhập
-            </Button>
+              <Button type="primary" onClick={() => navigate("/login")}>
+                Đăng nhập
+              </Button>
             </div>
           )}
 
@@ -67,7 +67,8 @@ const Header = () => {
                 items,
                 onClick: ({ key }) => {
                   if (key === "1") navigate("/profile");
-                  if (key === "2") navigate("/conversations");
+                  if (key === "2")
+                    navigate("/bot-iframe/664b185ea6f98c29c2a2bfc3");
                   if (key === "3") navigate("/dashboard");
                   if (key === "4") {
                     handleLogout();
