@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 /MobiIframe
 flow.md
+/.claude
