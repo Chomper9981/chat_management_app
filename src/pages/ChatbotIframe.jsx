@@ -78,6 +78,17 @@ const ChatbotIframe = () => {
 
   const [tempMessages, setTempMessages] = useState([defaultMessage]);
 
+  const conversationIdRef = useRef(conversationId);
+  const tempMessagesRef = useRef(tempMessages);
+
+  useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
+
+  useEffect(() => {
+    tempMessagesRef.current = tempMessages;
+  }, [tempMessages]);
+
   // Hook khởi tạo kết nối Socket.IO
   useEffect(() => {
     socketRef.current = io(
@@ -94,7 +105,7 @@ const ChatbotIframe = () => {
       const receivedData = data;
 
       // Bước 3: Nếu là giao tiếp lần đầu, backend sinh room ID thực thụ
-      if (receivedData.conversation_id && conversationId === "new") {
+      if (receivedData.conversation_id && conversationIdRef.current === "new") {
         const newId = receivedData.conversation_id;
 
         // Bước 4: Chuyển state sang ID mới
@@ -107,15 +118,14 @@ const ChatbotIframe = () => {
           }),
         );
 
-        // Bước 5 & 6: Lấy các tin trong state tạm (Welcome message, First user message),
-        // đổi lại ID mới và lưu thẳng vào Redux chats array
-        setTempMessages((currentTemp) => {
-          currentTemp.forEach((msg) => {
-            const mappedMsg = { ...msg, conversationId: newId };
-            dispatch(addChat(mappedMsg));
-          });
-          return []; // Xóa state tạm
+        // Bước 5 & 6: Lấy các tin trong file tạm từ Ref (thoát quy luật StrictMode)
+        const messagesToFlush = tempMessagesRef.current;
+        messagesToFlush.forEach((msg) => {
+          const mappedMsg = { ...msg, conversationId: newId };
+          dispatch(addChat(mappedMsg));
         });
+        
+        setTempMessages([]); // Xóa state tạm an toàn
       }
 
       // Map đúng tên trường
@@ -135,7 +145,7 @@ const ChatbotIframe = () => {
           setIsBotTyping(false);
           if (receivedData?.type !== "error") {
             // Bước 7: Bot Message trả về cùng conversationId mới
-            const activeId = receivedData.conversation_id || conversationId;
+            const activeId = receivedData.conversation_id || conversationIdRef.current;
             const botMessage = {
               id: receivedData.id || uuidv4(),
               conversationId: activeId,
@@ -162,7 +172,7 @@ const ChatbotIframe = () => {
         socketRef.current.disconnect();
       }
     };
-  }, [conversationId, currentBot, currentUser, dispatch, inforChat, botId]);
+  }, [currentBot, currentUser, dispatch, inforChat, botId]);
 
   // Hook chịu trách nhiệm kéo messages chuẩn từ Redux (Step 1, 2)
   useEffect(() => {
