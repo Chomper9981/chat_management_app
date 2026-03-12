@@ -34,7 +34,6 @@ const ChatbotIframe = () => {
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [streamingMessage, setStreamingMessage] = useState("");
 
-  // Khởi tạo và lấy định danh người dùng nếu chưa có
   const [inforChat] = useState(() => {
     const userInfor =
       JSON.parse(localStorage.getItem("INFOR_CHAT_IFRAME")) ?? null;
@@ -47,23 +46,22 @@ const ChatbotIframe = () => {
     return idUser;
   });
 
-  const iframeBoxes = useSelector((state) => state.iframeBox?.iframeBoxes || []);
-
-  // Tìm kiếm xem cặp (inforChat + botId) đã từng tạoc conversation chưa
+  const iframeBoxes = useSelector(
+    (state) => state.iframeBox?.iframeBoxes || [],
+  );
+  //1
   const mappedBox = useMemo(() => {
     return iframeBoxes.find(
       (box) => box.inforChat === inforChat && box.botId === String(botId),
     );
   }, [iframeBoxes, inforChat, botId]);
 
-  // Sinh conversationId dựa trên box cũ, hoặc 'new' nếu chưa từng chat
   const [conversationId, setConversationId] = useState(
     mappedBox ? mappedBox.conversationId : "new",
   );
 
   const socketRef = useRef(null);
 
-  // Buffer chứa tin nhắn tạm cho lúc conversationId đang là "new"
   const defaultMessage = useMemo(
     () => ({
       id: uuidv4(),
@@ -75,7 +73,7 @@ const ChatbotIframe = () => {
     }),
     [currentBot?.id, currentUser?.id],
   );
-
+  //2
   const [tempMessages, setTempMessages] = useState([defaultMessage]);
 
   const conversationIdRef = useRef(conversationId);
@@ -104,11 +102,11 @@ const ChatbotIframe = () => {
     socketRef.current.on("chatbot_message", (data) => {
       const receivedData = data;
 
-      // Bước 3: Nếu là giao tiếp lần đầu, backend sinh room ID thực thụ
+      //3
       if (receivedData.conversation_id && conversationIdRef.current === "new") {
         const newId = receivedData.conversation_id;
 
-        // Bước 4: Chuyển state sang ID mới
+        //4
         setConversationId(newId);
         dispatch(
           createIframeBox({
@@ -118,21 +116,19 @@ const ChatbotIframe = () => {
           }),
         );
 
-        // Bước 5 & 6: Lấy các tin trong file tạm từ Ref (thoát quy luật StrictMode)
+        //5
         const messagesToFlush = tempMessagesRef.current;
         messagesToFlush.forEach((msg) => {
           const mappedMsg = { ...msg, conversationId: newId };
           dispatch(addChat(mappedMsg));
         });
-        
-        setTempMessages([]); // Xóa state tạm an toàn
+
+        setTempMessages([]);
       }
 
-      // Map đúng tên trường
       receivedData.content = receivedData.text;
       receivedData.createdAt = receivedData.created_at;
 
-      // Xử lý luồng text typing
       if (
         receivedData?.sender === "bot" &&
         receivedData?.type !== "follow_up_question"
@@ -140,12 +136,12 @@ const ChatbotIframe = () => {
         setIsBotTyping(true);
         setStreamingMessage(receivedData.content);
 
-        // Kiểm tra is_end
+        //6
         if (receivedData?.is_end) {
           setIsBotTyping(false);
           if (receivedData?.type !== "error") {
-            // Bước 7: Bot Message trả về cùng conversationId mới
-            const activeId = receivedData.conversation_id || conversationIdRef.current;
+            const activeId =
+              receivedData.conversation_id || conversationIdRef.current;
             const botMessage = {
               id: receivedData.id || uuidv4(),
               conversationId: activeId,
@@ -161,7 +157,7 @@ const ChatbotIframe = () => {
         }
       }
 
-      // Follow up questions...
+      // chưa xử lí đối với follow up questions
       if (receivedData?.type === "follow_up_question") {
         console.log("Follow up question:", receivedData.text);
       }
@@ -174,7 +170,6 @@ const ChatbotIframe = () => {
     };
   }, [currentBot, currentUser, dispatch, inforChat, botId]);
 
-  // Hook chịu trách nhiệm kéo messages chuẩn từ Redux (Step 1, 2)
   useEffect(() => {
     if (conversationId !== "new") {
       const allChats = JSON.parse(localStorage.getItem("chats")) || [];
@@ -183,20 +178,17 @@ const ChatbotIframe = () => {
       );
       dispatch(setConversationMessages(conversationMessages));
     } else {
-      // Khi 'new', clear mảng redux để nhường chỗ render state tạm
       dispatch(setConversationMessages([]));
     }
   }, [conversationId, dispatch]);
 
-  // Render list tuỳ theo giai đoạn (Tạm lúc new, chuẩn lúc lấy ID)
   const displayMessages = useMemo(() => {
-    // Nếu "new" thì xài temp, nếu đã có ID thì xài currentConversationMessages từ Redux
     const messages =
       conversationId === "new"
         ? [...tempMessages]
         : [...currentConversationMessages];
 
-    // Nếu bot đang gõ và có text stream
+    // bot stream
     if (isBotTyping && streamingMessage) {
       messages.push({
         id: "streaming",
@@ -219,7 +211,6 @@ const ChatbotIframe = () => {
     currentUser,
   ]);
 
-  // Hàm kích hoạt khi User bấm gửi tin nhắn
   const handleSendMessage = async (text, chattingUser) => {
     if (!currentUser || !chattingUser) return;
 
@@ -234,26 +225,25 @@ const ChatbotIframe = () => {
     };
 
     if (conversationId === "new") {
-      // Bước 2: Lưu vào state tạm
+      //2
       setTempMessages((prev) => [...prev, userMessage]);
     } else {
-      // Bước 8: Lưu bằng addChat một cách tự nhiên
+      //7
       dispatch(addChat(userMessage));
     }
 
-    // Bước 3: Bắn Socket Emit lên Server báo hiệu có câu hỏi mới
+    //3
     if (socketRef.current) {
-      // Cấu hình payload y hệt backend MobiIframe yêu cầu
+      // Cấu hình payload theo backend
       socketRef.current.emit("chatbot_message", {
         type: "question",
         is_conversation_exists: conversationId !== "new",
         conversation_id: conversationId === "new" ? "" : conversationId,
-        text: text, // Nội dung chat text
+        text: text,
         is_iframe: true,
         chatbot_id: botId,
-        user_info_iframe: { user_name: inforChat }, // Cung cấp UUID sinh ra từ local để định danh người dùng
+        user_info_iframe: { user_name: inforChat },
         is_refresh_iframe: false,
-        // Session ID bảo mật: Nếu chưa có tiến hành random, có rồi thì lấy từ bộ nhớ phiên
         session_id:
           sessionStorage.getItem("CHAT_SESSION_ID") ||
           (() => {
@@ -263,7 +253,7 @@ const ChatbotIframe = () => {
           })(),
       });
 
-      // Nếu là hội thoại cũ (đã có Room), báo cho Server join socket này lại vào Room đó để nghe Stream
+      //4
       if (conversationId !== "new") {
         socketRef.current.emit("join_conversation_user_chatbot", {
           conversation_id: conversationId,

@@ -8,6 +8,7 @@ import botReducer from "./botReducer";
 import chatboxReducer from "./chatboxReducer";
 import chatReducer from "./chatReducer";
 import iframeBoxReducer from "./iframeBoxReducer";
+import streamChatReducer from "./streamChatReducer";
 
 const rootReducer = combineReducers({
   auth: loginReducer,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   chatBox: chatboxReducer,
   chat: chatReducer,
   iframeBox: iframeBoxReducer,
+  streamChat: streamChatReducer,
 });
 
 export default rootReducer;

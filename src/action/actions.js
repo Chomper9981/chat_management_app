@@ -14,6 +14,11 @@ import {
   SET_CONVERSATION_MESSAGES,
   CLEAR_CONVERSATION_OF_DELETED_CHATBOX,
   CREATE_IFRAME_BOX,
+  SET_STREAM_AGENT_INFO,
+  SET_STREAM_MESSAGES,
+  ADD_STREAM_MESSAGE,
+  UPDATE_STREAM_LATEST_MESSAGE,
+  SET_STREAM_CONVERSATION_INFO,
 } from "./types";
 
 // Action để lưu thông tin user sau khi login thành công
@@ -94,4 +99,29 @@ export const clearConversationDeletedChatBox = (chatBoxId) => ({
 export const createIframeBox = (boxConfig) => ({
   type: CREATE_IFRAME_BOX,
   payload: boxConfig
+});
+
+export const setStreamAgentInfo = (agentInfo) => ({
+  type: SET_STREAM_AGENT_INFO,
+  payload: agentInfo
+});
+
+export const setStreamMessages = (messages) => ({
+  type: SET_STREAM_MESSAGES,
+  payload: messages
+});
+
+export const addStreamMessage = (message) => ({
+  type: ADD_STREAM_MESSAGE,
+  payload: message
+});
+
+export const updateStreamLatestMessage = (content) => ({
+  type: UPDATE_STREAM_LATEST_MESSAGE,
+  payload: content
+});
+
+export const setStreamConversationInfo = (conversationInfo) => ({
+  type: SET_STREAM_CONVERSATION_INFO,
+  payload: conversationInfo
 });

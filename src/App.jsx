@@ -12,7 +12,8 @@ import Conversations from "./pages/Conversations.jsx";
 import ChatBot from "./pages/ChatBot.jsx";
 import CreateBot from "./pages/CreateBot.jsx";
 import ChatbotIframe from "./pages/ChatbotIframe.jsx";
-  
+import ChatBotStream from "./pages/ChatBotStream.jsx";
+
 const App = () => {
   return (
     <div>
@@ -26,7 +27,7 @@ const App = () => {
 
             {/* PRIVATE ROUTES */}
 
-            <Route  
+            <Route
               path="/conversations"
               element={
                 <PrivateRoute>
@@ -79,6 +80,15 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <ChatbotIframe />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/stream/:botId"
+              element={
+                <PrivateRoute>
+                  <ChatBotStream />
                 </PrivateRoute>
               }
             />

@@ -87,6 +87,14 @@ const Data = [
     description: "Bot iframe.",
     status: true,
     createdAt: "2024-06-29",
+  },
+  {
+    id: "698548d83d6a53853dbf6280",
+    name: "Bot Stream",
+    avatar: `https://i.pravatar.cc/70?img=${Math.floor(Math.random() * 70 + 1)}`,
+    description: "Bot Stream.",
+    status: true,
+    createdAt: "2024-06-29",
   }
 ];
 export default Data;

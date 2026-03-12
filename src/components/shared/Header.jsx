@@ -16,10 +16,14 @@ const items = [
   },
   {
     key: "3",
-    label: "Bảng điều khiển",
+    label: "Bot Stream",
   },
   {
     key: "4",
+    label: "Bảng điều khiển",
+  },
+  {
+    key: "5",
     label: "Đăng xuất",
   },
 ];
@@ -69,8 +73,9 @@ const Header = () => {
                   if (key === "1") navigate("/profile");
                   if (key === "2")
                     navigate("/bot-iframe/664b185ea6f98c29c2a2bfc3");
-                  if (key === "3") navigate("/dashboard");
-                  if (key === "4") {
+                  if (key === "3") navigate("/stream/698548d83d6a53853dbf6280");
+                  if (key === "4") navigate("/dashboard");
+                  if (key === "5") {
                     handleLogout();
                   }
                 },
