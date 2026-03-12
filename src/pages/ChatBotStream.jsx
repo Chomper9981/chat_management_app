@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Layout, Avatar, Typography, Space } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Layout, Avatar, Typography, Space, Button, Modal, message } from "antd";
+import { io } from "socket.io-client";
+import { UserOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
@@ -24,6 +25,8 @@ const ChatBotStream = () => {
   const { agentInfo, conversationInfo, messages } = useSelector(
     (state) => state.streamChat,
   );
+  
+  const socketRef = useRef(null);
 
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [streamingText, setStreamingText] = useState("");
@@ -35,21 +38,59 @@ const ChatBotStream = () => {
   useEffect(() => {
     const initChat = async () => {
       try {
-        // Lấy convesation_id từ URL hoặc sinh mới (Ở đây demo dùng URL params botId)
-        // Lưu ý: owlla-dev server yêu cầu agent_id và conversation_id
-        const startRes = await fetch(
-          `${baseUrl}api/chat-website/start?agent_id=${botId}&conversation_id=69b27020fee7d076c554b006`,
-        );
+        // Bước 2: Lấy conversation_id đã lưu từ localStorage (nếu có)
+        const savedConvId = localStorage.getItem(`${botId}_CONVERSATION_ID`);
+        
+        const startUrl = new URL(`${baseUrl}api/chat-website/start`);
+        startUrl.searchParams.append("agent_id", botId);
+        if (savedConvId) {
+          startUrl.searchParams.append("conversation_id", savedConvId);
+        }
+
+        const startRes = await fetch(startUrl.toString());
         const startData = await startRes.json();
+        const apiConvId = startData.conversation_info?.conversation_id;
+        const apiSessId = startData.conversation_info?.session_id;
+
+        // Bước 2: Lưu lại vào localStorage với tên đặc thù
+        if (apiConvId) {
+          localStorage.setItem(`${botId}_CONVERSATION_ID`, apiConvId);
+        }
+        if (apiSessId) {
+          localStorage.setItem(`${botId}_SESSION_ID`, apiSessId);
+        }
+
         dispatch(setStreamAgentInfo(startData));
         dispatch(setStreamConversationInfo(startData.conversation_info));
 
-        // 2. Lấy lịch sử tin nhắn
-        const historyRes = await fetch(
-          `${baseUrl}api/chat-website/get-message?conversation_id=${startData.conversation_info.conversation_id}`,
+        // Bước 3: Khởi tạo Socket.IO namespace /chat-iframe
+        // Sử dụng baseUrl (VITE_DEV_BASE_URL) cho socket đồng bộ với API
+        socketRef.current = io(
+          `${baseUrl}chat-iframe`,
+          {
+            path: "/socket.io/socket.io",
+            transports: ["websocket"],
+            query: { verify: false },
+          },
         );
-        const historyData = await historyRes.json();
-        dispatch(setStreamMessages(historyData.data.messages || []));
+
+        socketRef.current.on("connect", () => {
+          console.log("Socket connected to /chat-iframe");
+          // Emit join_conversation_iframe
+          socketRef.current.emit("join_conversation_iframe", {
+            agent_id: botId,
+            conversation_id: apiConvId,
+          });
+        });
+
+        // 2. Lấy lịch sử tin nhắn
+        if (apiConvId) {
+          const historyRes = await fetch(
+            `${baseUrl}api/chat-website/get-message?conversation_id=${apiConvId}`,
+          );
+          const historyData = await historyRes.json();
+          dispatch(setStreamMessages(historyData.data.messages || []));
+        }
       } catch (error) {
         console.error("Initialization error:", error);
       }
@@ -58,6 +99,12 @@ const ChatBotStream = () => {
     if (baseUrl && botId) {
       initChat();
     }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
   }, [baseUrl, botId, dispatch]);
 
   // Transform messages to match ConversationArea expected format
@@ -158,6 +205,50 @@ const ChatBotStream = () => {
     }
   };
 
+  // 4. Hàm xóa cuộc hội thoại
+  const handleClearChat = async () => {
+    if (!conversationId) return;
+
+    Modal.confirm({
+      title: "Xóa lịch sử trò chuyện?",
+      content: "Hành động này sẽ xóa toàn bộ tin nhắn và khởi tạo lại phiên mới.",
+      okText: "Xóa",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          // Gọi API Clear trên Server
+          await fetch(`${baseUrl}api/chat-website/clear-message`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ conversation_id: conversationId }),
+          });
+
+          // Xóa LocalStorage
+          localStorage.removeItem(`${botId}_CONVERSATION_ID`);
+          localStorage.removeItem(`${botId}_SESSION_ID`);
+
+          // Ngắt socket cũ
+          if (socketRef.current) {
+            socketRef.current.disconnect();
+          }
+
+          // Reset Redux và gọi lại Init
+          dispatch(setStreamMessages([]));
+          dispatch(setStreamAgentInfo(null));
+          dispatch(setStreamConversationInfo(null));
+          
+          // Re-init (useEffect sẽ tự chạy lại nếu ta có cơ chế trigger hoặc đơn giản là gọi lại hàm)
+          window.location.reload(); // Cách đơn giản nhất để reset sạch mọi thứ
+          
+          message.success("Đã xóa lịch sử thành công");
+        } catch (error) {
+          console.error("Clear chat error:", error);
+          message.error("Có lỗi xảy ra khi xóa");
+        }
+      },
+    });
+  };
+
   return (
     <Layout className="conversations-layout">
       <Layout className="conversations-main">
@@ -177,6 +268,12 @@ const ChatBotStream = () => {
               {/* <div dangerouslySetInnerHTML={{ __html: agentInfo?.prologue }} /> */}
             </div>
           </div>
+          <Button
+            type="text"
+            icon={<DeleteOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />}
+            onClick={handleClearChat}
+            title="Xóa cuộc hội thoại"
+          />
         </Header>
 
         <Content className="conversations-content">
