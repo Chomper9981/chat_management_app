@@ -1,5 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Layout, Avatar, Typography, Space, Button, Modal, message } from "antd";
+import {
+  Layout,
+  Avatar,
+  Typography,
+  Space,
+  Button,
+  Modal,
+  message,
+} from "antd";
 import { io } from "socket.io-client";
 import { UserOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
@@ -25,7 +33,7 @@ const ChatBotStream = () => {
   const { agentInfo, conversationInfo, messages } = useSelector(
     (state) => state.streamChat,
   );
-  
+
   const socketRef = useRef(null);
 
   const [isBotTyping, setIsBotTyping] = useState(false);
@@ -40,7 +48,7 @@ const ChatBotStream = () => {
       try {
         // Bước 2: Lấy conversation_id đã lưu từ localStorage (nếu có)
         const savedConvId = localStorage.getItem(`${botId}_CONVERSATION_ID`);
-        
+
         const startUrl = new URL(`${baseUrl}api/chat-website/start`);
         startUrl.searchParams.append("agent_id", botId);
         if (savedConvId) {
@@ -65,14 +73,11 @@ const ChatBotStream = () => {
 
         // Bước 3: Khởi tạo Socket.IO namespace /chat-iframe
         // Sử dụng baseUrl (VITE_DEV_BASE_URL) cho socket đồng bộ với API
-        socketRef.current = io(
-          `${baseUrl}chat-iframe`,
-          {
-            path: "/socket.io/socket.io",
-            transports: ["websocket"],
-            query: { verify: false },
-          },
-        );
+        socketRef.current = io(`${baseUrl}chat-iframe`, {
+          path: "/socket.io/socket.io",
+          transports: ["websocket"],
+          query: { verify: false },
+        });
 
         socketRef.current.on("connect", () => {
           console.log("Socket connected to /chat-iframe");
@@ -165,27 +170,64 @@ const ChatBotStream = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedText = "";
+      let buffer = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        // Parse SSE format: event: ... \n data: ...
-        const lines = chunk.split("\n");
-        lines.forEach((line) => {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.replace("data: ", ""));
-              if (data.content) {
-                accumulatedText = data.content;
-                setStreamingText(accumulatedText);
+        buffer += decoder.decode(value, { stream: true });
+        
+        // SSE format xử lý: lọc theo từng cụm event/data
+        const blocks = buffer.split("\n\n");
+        // Giữ lại phần chưa hoàn thiện ở cuối buffer
+        buffer = blocks.pop() || "";
+
+        for (const block of blocks) {
+          const lines = block.split("\n");
+          let currentEvent = "";
+          
+          for (const line of lines) {
+            if (line.startsWith("event: ")) {
+              currentEvent = line.replace("event: ", "").trim();
+            } else if (line.startsWith("data: ")) {
+              const dataStr = line.replace("data: ", "").trim();
+              try {
+                const data = JSON.parse(dataStr);
+                
+                if (currentEvent === "message") {
+                  if (data.content) {
+                    accumulatedText = data.content;
+                    setStreamingText(accumulatedText);
+                  }
+                } else if (currentEvent === "end") {
+                  if (data.content) {
+                    accumulatedText = data.content;
+                  }
+                  // Kết thúc sớm nếu gặp event: end
+                  setIsBotTyping(false);
+                }
+              } catch (parseError) {
+                console.error("Parse error for chunk:", dataStr, parseError);
               }
-            } catch {
-              // Ignore parse errors for partial chunks
             }
           }
-        });
+        }
+      }
+
+      // Sau khi kết thúc tất cả chunks, kiểm tra nếu buffer còn dữ liệu (trường hợp không kết thúc bằng \n\n)
+      if (buffer.trim()) {
+        const lines = buffer.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.replace("data: ", "").trim());
+              if (data.content) accumulatedText = data.content;
+            } catch (error) {
+              console.error("Final buffer parse error:", error);
+            }
+          }
+        }
       }
 
       // Khi stream kết thúc, lưu tin nhắn bot vào Redux
@@ -211,7 +253,8 @@ const ChatBotStream = () => {
 
     Modal.confirm({
       title: "Xóa lịch sử trò chuyện?",
-      content: "Hành động này sẽ xóa toàn bộ tin nhắn và khởi tạo lại phiên mới.",
+      content:
+        "Hành động này sẽ xóa toàn bộ tin nhắn và khởi tạo lại phiên mới.",
       okText: "Xóa",
       cancelText: "Hủy",
       onOk: async () => {
@@ -236,10 +279,10 @@ const ChatBotStream = () => {
           dispatch(setStreamMessages([]));
           dispatch(setStreamAgentInfo(null));
           dispatch(setStreamConversationInfo(null));
-          
+
           // Re-init (useEffect sẽ tự chạy lại nếu ta có cơ chế trigger hoặc đơn giản là gọi lại hàm)
           window.location.reload(); // Cách đơn giản nhất để reset sạch mọi thứ
-          
+
           message.success("Đã xóa lịch sử thành công");
         } catch (error) {
           console.error("Clear chat error:", error);
@@ -270,7 +313,9 @@ const ChatBotStream = () => {
           </div>
           <Button
             type="text"
-            icon={<DeleteOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />}
+            icon={
+              <DeleteOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />
+            }
             onClick={handleClearChat}
             title="Xóa cuộc hội thoại"
           />
@@ -319,7 +364,11 @@ const ChatBotStream = () => {
         </Content>
 
         <Footer className="conversations-footer">
-          <ChatSubmit onSend={handleSendMessage} disabled={isBotTyping} />
+          <ChatSubmit
+            onSend={handleSendMessage}
+            disabled={isBotTyping}
+            chattingUser={{ id: botId, name: agentInfo?.name }}
+          />
         </Footer>
       </Layout>
     </Layout>
