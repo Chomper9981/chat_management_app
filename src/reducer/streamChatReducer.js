@@ -34,20 +34,6 @@ const streamChatReducer = (state = initialState, action) => {
         ...state,
         messages: [...state.messages, action.payload],
       };
-    case UPDATE_STREAM_LATEST_MESSAGE: {
-      const newMessages = [...state.messages];
-      if (newMessages.length > 0) {
-        const lastMsg = { ...newMessages[newMessages.length - 1] };
-        if (lastMsg.author.role === "agent") {
-          lastMsg.content = action.payload; // Update streaming text
-          newMessages[newMessages.length - 1] = lastMsg;
-        }
-      }
-      return {
-        ...state,
-        messages: newMessages,
-      };
-    }
     default:
       return state;
   }

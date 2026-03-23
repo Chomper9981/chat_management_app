@@ -9,7 +9,7 @@ import {
   message,
 } from "antd";
 import { io } from "socket.io-client";
-import { UserOutlined, DeleteOutlined } from "@ant-design/icons";
+import { UserOutlined, DeleteOutlined, RobotOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
@@ -33,12 +33,35 @@ const ChatBotStream = () => {
   const { agentInfo, conversationInfo, messages } = useSelector(
     (state) => state.streamChat,
   );
+  const currentUser = useSelector((state) => state.auth.myInfo);
+  const currentUserId = currentUser?.id || "user";
 
   const socketRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const [isBotTyping, setIsBotTyping] = useState(false);
-  const [streamingText, setStreamingText] = useState("");
+  const [streamingMessage, setStreamingMessage] = useState(null);
   const conversationId = conversationInfo?.conversation_id || "";
+
+  const scrollToBottom = (behavior = "smooth") => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+  };
+
+  const messagesCount = messages.length;
+
+  // Scroll khi tin nhắn thay đổi hoặc đang stream
+  useEffect(() => {
+    if (messagesCount > 0 || streamingMessage) {
+      scrollToBottom();
+    }
+  }, [messagesCount, streamingMessage]);
+
+  // Scroll ngay lập tức khi load xong lịch sử (behavior: auto)
+  useEffect(() => {
+    if (messagesCount > 0) {
+      scrollToBottom("auto");
+    }
+  }, [messagesCount > 0]); // Tránh dùng complex expression trực tiếp nếu lint báo lỗi, nhưng ở đây ta dùng variable
 
   const baseUrl = import.meta.env.VITE_DEV_BASE_URL;
 
@@ -46,10 +69,13 @@ const ChatBotStream = () => {
   useEffect(() => {
     const initChat = async () => {
       try {
-        // Bước 2: Lấy conversation_id đã lưu từ localStorage (nếu có)
+        // Bước 1: Lấy conversation_id và session_id đã lưu từ localStorage
         const savedConvId = localStorage.getItem(`${botId}_CONVERSATION_ID`);
 
-        const startUrl = new URL(`${baseUrl}api/chat-website/start`);
+        const startUrl = new URL(
+          `${baseUrl}api/chat-website/start`,
+          window.location.origin,
+        );
         startUrl.searchParams.append("agent_id", botId);
         if (savedConvId) {
           startUrl.searchParams.append("conversation_id", savedConvId);
@@ -57,10 +83,11 @@ const ChatBotStream = () => {
 
         const startRes = await fetch(startUrl.toString());
         const startData = await startRes.json();
+
         const apiConvId = startData.conversation_info?.conversation_id;
         const apiSessId = startData.conversation_info?.session_id;
 
-        // Bước 2: Lưu lại vào localStorage với tên đặc thù
+        // Bước 2: Lưu lại vào localStorage
         if (apiConvId) {
           localStorage.setItem(`${botId}_CONVERSATION_ID`, apiConvId);
         }
@@ -72,29 +99,33 @@ const ChatBotStream = () => {
         dispatch(setStreamConversationInfo(startData.conversation_info));
 
         // Bước 3: Khởi tạo Socket.IO namespace /chat-iframe
-        // Sử dụng baseUrl (VITE_DEV_BASE_URL) cho socket đồng bộ với API
-        socketRef.current = io(`${baseUrl}chat-iframe`, {
-          path: "/socket.io/socket.io",
-          transports: ["websocket"],
-          query: { verify: false },
-        });
-
-        socketRef.current.on("connect", () => {
-          console.log("Socket connected to /chat-iframe");
-          // Emit join_conversation_iframe
-          socketRef.current.emit("join_conversation_iframe", {
-            agent_id: botId,
-            conversation_id: apiConvId,
+        if (!socketRef.current) {
+          socketRef.current = io(`${baseUrl}chat-iframe`.replace("//", "/"), {
+            path: "/socket.io/socket.io",
+            transports: ["websocket"],
+            query: { verify: false },
           });
-        });
 
-        // 2. Lấy lịch sử tin nhắn
-        if (apiConvId) {
+          socketRef.current.on("connect", () => {
+            console.log("Socket connected to /chat-iframe");
+            // Emit join_conversation_iframe
+            socketRef.current.emit("join_conversation_iframe", {
+              agent_id: botId,
+              conversation_id: apiConvId,
+            });
+          });
+        }
+
+        // 2. Lấy lịch sử tin nhắn nếu đã có conversation_id từ trước
+        if (apiConvId && savedConvId) {
           const historyRes = await fetch(
             `${baseUrl}api/chat-website/get-message?conversation_id=${apiConvId}`,
           );
           const historyData = await historyRes.json();
-          dispatch(setStreamMessages(historyData.data.messages || []));
+          const rawMessages = historyData.data.messages || [];
+
+          // Map raw messages to internal format if necessary, or keep as is if compatible
+          dispatch(setStreamMessages(rawMessages));
         }
       } catch (error) {
         console.error("Initialization error:", error);
@@ -108,6 +139,7 @@ const ChatBotStream = () => {
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, [baseUrl, botId, dispatch]);
@@ -117,23 +149,16 @@ const ChatBotStream = () => {
     const transformed = messages.map((msg) => ({
       id: msg._id,
       content: msg.content,
-      senderId: msg.author.role === "agent" ? botId : "user",
-      receiverId: msg.author.role === "agent" ? "user" : botId,
+      senderId: msg.author.role === "agent" ? botId : currentUserId,
+      receiverId: msg.author.role === "agent" ? currentUserId : botId,
       createdAt: msg.created_at,
     }));
 
-    if (isBotTyping && streamingText) {
-      transformed.push({
-        id: "streaming",
-        content: streamingText,
-        senderId: botId,
-        receiverId: "user",
-        createdAt: new Date().toISOString(),
-        isStreaming: true,
-      });
+    if (isBotTyping && streamingMessage) {
+      transformed.push(streamingMessage);
     }
     return transformed;
-  }, [messages, botId, isBotTyping, streamingText]);
+  }, [messages, botId, isBotTyping, streamingMessage, currentUserId]);
 
   // 3. Hàm xử lý gửi tin nhắn dùng Stream Reader
   const handleSendMessage = async (text) => {
@@ -141,17 +166,16 @@ const ChatBotStream = () => {
 
     // Thêm tin nhắn user vào Redux ngay
     const userMsgId = uuidv4();
-    dispatch(
-      addStreamMessage({
-        _id: userMsgId,
-        content: text,
-        author: { role: "user" },
-        created_at: new Date().toISOString(),
-      }),
-    );
+    const userMsg = {
+      _id: userMsgId,
+      content: text,
+      author: { role: "user" },
+      created_at: new Date().toISOString(),
+    };
+    dispatch(addStreamMessage(userMsg));
 
     setIsBotTyping(true);
-    setStreamingText("");
+    setStreamingMessage(null);
 
     try {
       const response = await fetch(`${baseUrl}api/chat-website/chat`, {
@@ -177,7 +201,7 @@ const ChatBotStream = () => {
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-        
+
         // SSE format xử lý: lọc theo từng cụm event/data
         const blocks = buffer.split("\n\n");
         // Giữ lại phần chưa hoàn thiện ở cuối buffer
@@ -186,7 +210,7 @@ const ChatBotStream = () => {
         for (const block of blocks) {
           const lines = block.split("\n");
           let currentEvent = "";
-          
+
           for (const line of lines) {
             if (line.startsWith("event: ")) {
               currentEvent = line.replace("event: ", "").trim();
@@ -194,18 +218,34 @@ const ChatBotStream = () => {
               const dataStr = line.replace("data: ", "").trim();
               try {
                 const data = JSON.parse(dataStr);
-                
+
                 if (currentEvent === "message") {
                   if (data.content) {
                     accumulatedText = data.content;
-                    setStreamingText(accumulatedText);
+                    setStreamingMessage({
+                      id: "streaming",
+                      content: accumulatedText,
+                      senderId: botId,
+                      receiverId: currentUserId,
+                      createdAt: new Date().toISOString(),
+                      isStreaming: true,
+                    });
                   }
                 } else if (currentEvent === "end") {
                   if (data.content) {
                     accumulatedText = data.content;
                   }
-                  // Kết thúc sớm nếu gặp event: end
+                  // Commit bot message to Redux only on 'end'
+                  dispatch(
+                    addStreamMessage({
+                      _id: data._id || uuidv4(),
+                      content: accumulatedText,
+                      author: { role: "agent" },
+                      created_at: new Date().toISOString(),
+                    }),
+                  );
                   setIsBotTyping(false);
+                  setStreamingMessage(null);
                 }
               } catch (parseError) {
                 console.error("Parse error for chunk:", dataStr, parseError);
@@ -214,36 +254,11 @@ const ChatBotStream = () => {
           }
         }
       }
-
-      // Sau khi kết thúc tất cả chunks, kiểm tra nếu buffer còn dữ liệu (trường hợp không kết thúc bằng \n\n)
-      if (buffer.trim()) {
-        const lines = buffer.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.replace("data: ", "").trim());
-              if (data.content) accumulatedText = data.content;
-            } catch (error) {
-              console.error("Final buffer parse error:", error);
-            }
-          }
-        }
-      }
-
-      // Khi stream kết thúc, lưu tin nhắn bot vào Redux
-      dispatch(
-        addStreamMessage({
-          _id: uuidv4(),
-          content: accumulatedText,
-          author: { role: "agent" },
-          created_at: new Date().toISOString(),
-        }),
-      );
     } catch (error) {
       console.error("Streaming error:", error);
     } finally {
       setIsBotTyping(false);
-      setStreamingText("");
+      setStreamingMessage(null);
     }
   };
 
@@ -252,37 +267,32 @@ const ChatBotStream = () => {
     if (!conversationId) return;
 
     Modal.confirm({
-      title: "Xóa lịch sử trò chuyện?",
+      title: "Xóa cuộc hội thoại?",
       content:
         "Hành động này sẽ xóa toàn bộ tin nhắn và khởi tạo lại phiên mới.",
       okText: "Xóa",
       cancelText: "Hủy",
+      okButtonProps: { danger: true },
       onOk: async () => {
         try {
-          // Gọi API Clear trên Server
           await fetch(`${baseUrl}api/chat-website/clear-message`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ conversation_id: conversationId }),
           });
 
-          // Xóa LocalStorage
           localStorage.removeItem(`${botId}_CONVERSATION_ID`);
           localStorage.removeItem(`${botId}_SESSION_ID`);
 
-          // Ngắt socket cũ
           if (socketRef.current) {
             socketRef.current.disconnect();
           }
 
-          // Reset Redux và gọi lại Init
           dispatch(setStreamMessages([]));
           dispatch(setStreamAgentInfo(null));
           dispatch(setStreamConversationInfo(null));
 
-          // Re-init (useEffect sẽ tự chạy lại nếu ta có cơ chế trigger hoặc đơn giản là gọi lại hàm)
-          window.location.reload(); // Cách đơn giản nhất để reset sạch mọi thứ
-
+          window.location.reload();
           message.success("Đã xóa lịch sử thành công");
         } catch (error) {
           console.error("Clear chat error:", error);
@@ -296,70 +306,114 @@ const ChatBotStream = () => {
     <Layout className="conversations-layout">
       <Layout className="conversations-main">
         <Header className="conversations-header">
-          <Avatar
-            className="chatting-avatar"
-            icon={<UserOutlined />}
-            src={
-              agentInfo?.avatar_uri ? `${baseUrl}${agentInfo.avatar_uri}` : null
-            }
-          />
-          <div className="chatting-info">
-            <div className="chatting-name">
-              {agentInfo?.name || "ChatBot Stream"}
+          <Space size={14}>
+            <div style={{ position: "relative" }}>
+              <Avatar
+                size={42}
+                icon={<RobotOutlined />}
+                src={
+                  agentInfo?.avatar_uri
+                    ? `${baseUrl}${agentInfo.avatar_uri}`
+                    : null
+                }
+                style={{
+                  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                  boxShadow: "0 4px 15px rgba(99, 102, 241, 0.4)",
+                }}
+              />
+              {/* <div
+                style={{
+                  position: "absolute",
+                  bottom: 1,
+                  right: 1,
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  background: "#22c55e",
+                  border: "2px solid #fff",
+                }}
+              /> */}
             </div>
-            <div className="chatting-description">
-              {/* <div dangerouslySetInnerHTML={{ __html: agentInfo?.prologue }} /> */}
+            <div className="chatting-info">
+              <span className="chatting-name">
+                {agentInfo?.name || "NexusAI Assistant"}
+              </span>
+              <span className="chatting-description">
+                {messages.length === 0
+                  ? "Sẵn sàng hỗ trợ bạn"
+                  : "Đang hoạt động"}
+              </span>
             </div>
-          </div>
+          </Space>
+
           <Button
+            className="clear-chat-btn"
             type="text"
-            icon={
-              <DeleteOutlined style={{ color: "#ff4d4f", fontSize: "20px" }} />
-            }
+            icon={<DeleteOutlined />}
             onClick={handleClearChat}
-            title="Xóa cuộc hội thoại"
-          />
+          >
+            <span>Xoá</span>
+          </Button>
         </Header>
 
         <Content className="conversations-content">
-          <ConversationArea
-            chattingUser={{ id: botId, name: agentInfo?.name }}
-            newMessages={displayMessages}
-          />
+          {messages.length === 0 ? (
+            <div className="welcome-container">
+              <div className="welcome-header">
+                <Avatar
+                  size={80}
+                  icon={<RobotOutlined />}
+                  src={
+                    agentInfo?.avatar_uri
+                      ? `${baseUrl}${agentInfo.avatar_uri}`
+                      : null
+                  }
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa)",
+                    boxShadow: "0 8px 40px rgba(99, 102, 241, 0.35)",
+                    marginBottom: 20,
+                  }}
+                />
+                <h3>Xin chào! Tôi là {agentInfo?.name || "NexusAI"}</h3>
+                <span className="welcome-subtitle">
+                  Chọn một câu hỏi bên dưới hoặc nhập nội dung bạn cần
+                </span>
+              </div>
 
-          {/* Opening Questions */}
-          {messages.length === 0 &&
-            agentInfo?.opening_questions?.length > 0 && (
-              <div
-                className="opening-questions-container"
-                style={{ padding: "0 20px" }}
-              >
-                <Space direction="vertical" style={{ width: "100%" }}>
+              {agentInfo?.opening_questions?.length > 0 && (
+                <div className="opening-questions-stack">
                   {agentInfo.opening_questions.map((q, idx) => (
                     <div
                       key={idx}
-                      className="opening-question-item"
+                      className="opening-question-card"
                       onClick={() => handleSendMessage(q)}
-                      style={{
-                        padding: "8px 16px",
-                        border: "1px solid #d9d9d9",
-                        borderRadius: "16px",
-                        cursor: "pointer",
-                        backgroundColor: "#fff",
-                        fontSize: "13px",
-                      }}
                     >
                       {q}
                     </div>
                   ))}
-                </Space>
-              </div>
-            )}
-
-          {isBotTyping && !streamingText && (
-            <div className="typing-indicator">
-              <span>Đang trả lời...</span>
+                </div>
+              )}
             </div>
+          ) : (
+            <>
+              <ConversationArea
+                chattingUser={{
+                  id: botId,
+                  name: agentInfo?.name,
+                  avatar: agentInfo?.avatar_uri
+                    ? `${baseUrl}${agentInfo.avatar_uri}`
+                    : null,
+                }}
+                newMessages={displayMessages}
+              />
+              {isBotTyping && !streamingMessage && (
+                <div className="typing-indicator">
+                  <span>{agentInfo?.name || "Bot"} đang nhập...</span>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </>
           )}
         </Content>
 
@@ -368,6 +422,7 @@ const ChatBotStream = () => {
             onSend={handleSendMessage}
             disabled={isBotTyping}
             chattingUser={{ id: botId, name: agentInfo?.name }}
+            placeholder="Nhập tin nhắn của bạn..."
           />
         </Footer>
       </Layout>

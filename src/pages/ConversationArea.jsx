@@ -3,16 +3,17 @@ import MessageList from "../components/messageComponents/MessageList.jsx";
 
 const ConversationArea = ({ chattingUser, newMessages = [], items }) => {
   const currentUser = useSelector((state) => state.auth.myInfo);
+  const currentUserId = currentUser?.id || "user";
 
-  if (!currentUser || !chattingUser) {
+  if (!chattingUser) {
     return null;
   }
   const conversationMessages = newMessages.filter(
     (msg) =>
-      (msg.senderId === currentUser.id &&
+      (msg.senderId === currentUserId &&
         msg.receiverId === chattingUser.id) ||
       (msg.senderId === chattingUser.id &&
-        msg.receiverId === currentUser.id)
+        msg.receiverId === currentUserId)
   );
 
   
